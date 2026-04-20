@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #070C17;
+  --surface:   #0C1625;
+  --card:      #101E32;
+  --card-hover:#14253C;
+  --border:    rgba(255,255,255,0.07);
+  --border-md: rgba(255,255,255,0.13);
+
+  --text:   #EAE4D8;
+  --muted:  rgba(234,228,216,0.52);
+  --dim:    rgba(234,228,216,0.28);
+
+  --red:    #E25A38;
+  --amber:  #F2A836;
+  --teal:   #35A882;
+  --blue:   #4A8EE0;
+  --purple: #8B7BE8;
+  --gray:   #7A8595;
+
+  --red-bg:    rgba(226,90,56,0.12);
+  --amber-bg:  rgba(242,168,54,0.12);
+  --teal-bg:   rgba(53,168,130,0.12);
+  --blue-bg:   rgba(74,142,224,0.12);
+  --purple-bg: rgba(139,123,232,0.12);
+
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; background: var(--surface); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+
+/* ── Typography ─────────────────────────────────────── */
+.display { font-family: var(--font-display); }
+
+/* ── Layout ─────────────────────────────────────────── */
+.container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+/* ── Cards ──────────────────────────────────────────── */
+.card {
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  transition: background 0.18s;
+}
+.card:hover { background: var(--card-hover); }
+
+/* ── Badges ─────────────────────────────────────────── */
+.badge {
+  display: inline-flex; align-items: center;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.07em;
+  padding: 3px 9px; border-radius: 100px; text-transform: uppercase;
+}
+.badge-high   { background: var(--red-bg);    color: var(--red);    }
+.badge-above  { background: var(--amber-bg);  color: var(--amber);  }
+.badge-below  { background: var(--teal-bg);   color: var(--teal);   }
+
+/* ── Section heading ─────────────────────────────────── */
+.section-head {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+/* ── Tabs ────────────────────────────────────────────── */
+.tab-bar {
+  display: flex; gap: 2px;
+  border-bottom: 0.5px solid var(--border);
+  margin-bottom: 2rem; flex-wrap: wrap;
+}
+.tab-btn {
+  padding: 10px 18px; font-size: 13px; font-weight: 500;
+  color: var(--muted); background: none; border: none;
+  border-bottom: 2px solid transparent; cursor: pointer;
+  margin-bottom: -1px; transition: color 0.15s;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--text); border-bottom-color: var(--amber); }
+
+/* ── Stat card ───────────────────────────────────────── */
+.stat-card {
+  background: var(--surface); border: 0.5px solid var(--border);
+  border-radius: var(--radius-md); padding: 1.1rem;
+}
+.stat-label { font-size: 10px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.05em; }
+.stat-value { font-size: 28px; font-weight: 600; font-family: var(--font-display); line-height: 1; }
+.stat-sub   { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* ── Progress bar ────────────────────────────────────── */
+.progress-track {
+  height: 5px; background: rgba(255,255,255,0.07);
+  border-radius: 100px; overflow: hidden; margin-top: 4px;
+}
+.progress-fill {
+  height: 100%; border-radius: 100px;
+  transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ── Inputs ──────────────────────────────────────────── */
+input[type="number"], select {
+  background: var(--surface);
+  border: 0.5px solid var(--border-md);
+  border-radius: var(--radius-sm);
+  color: var(--text); padding: 9px 12px; font-size: 14px;
+  font-family: var(--font-sans); width: 100%;
+  transition: border-color 0.15s; outline: none;
+}
+input[type="number"]:focus, select:focus { border-color: var(--amber); }
+
+/* ── Button ──────────────────────────────────────────── */
+.btn-primary {
+  background: var(--amber); color: #1a0e00;
+  font-weight: 600; font-size: 14px; padding: 11px 24px;
+  border: none; border-radius: var(--radius-sm);
+  cursor: pointer; font-family: var(--font-sans);
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+
+/* ── County row ──────────────────────────────────────── */
+.county-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0; border-bottom: 0.5px solid var(--border); font-size: 13px;
+}
+.county-row:last-child { border-bottom: none; }
+
+/* ── Animations ──────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.55s ease both; }
+.delay-1 { animation-delay: 0.08s; }
+.delay-2 { animation-delay: 0.16s; }
+.delay-3 { animation-delay: 0.24s; }
+.delay-4 { animation-delay: 0.32s; }
+.delay-5 { animation-delay: 0.40s; }
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+.shimmer {
+  background: linear-gradient(90deg, var(--amber) 0%, #fff8e1 50%, var(--amber) 100%);
+  background-size: 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ── Mobile ──────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .container { padding: 0 16px; }
+  .stat-value { font-size: 22px; }
+}
