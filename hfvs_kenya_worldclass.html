@@ -1,0 +1,2014 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="Kenya Housing Financial Vulnerability Score — 47 Counties, KHS 2023/24, MSc Dissertation Strathmore University"/>
+<meta name="theme-color" content="#0A2E1F"/>
+<title>HFVS Kenya — Housing Financial Vulnerability Score</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   DESIGN TOKENS — HFVS Kenya World-Class Platform
+   Theme: Kenya Forest Night (dark default) / Savanna Day (light)
+═══════════════════════════════════════════════════════════════════ */
+:root {
+  --ff-display: 'Space Grotesk', sans-serif;
+  --ff-body:    'Inter', sans-serif;
+  --ff-mono:    'Space Mono', monospace;
+
+  /* Risk palette */
+  --risk-high:   #FF5A5A;
+  --risk-mod:    #FFB347;
+  --risk-low:    #00C47A;
+  --risk-high-bg: rgba(255,90,90,.12);
+  --risk-mod-bg:  rgba(255,179,71,.12);
+  --risk-low-bg:  rgba(0,196,122,.12);
+
+  /* Dimension colors */
+  --d1: #4FC3F7;
+  --d2: #9B59B6;
+  --d3: #E74C3C;
+  --d4: #F39C12;
+  --d5: #00C47A;
+
+  /* Transition */
+  --t: all 0.2s cubic-bezier(.4,0,.2,1);
+  --t-slow: all 0.5s cubic-bezier(.4,0,.2,1);
+
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+}
+
+/* DARK THEME (default) */
+[data-theme="dark"] {
+  --bg:       #07100C;
+  --bg2:      #0A1A12;
+  --surface:  #111C16;
+  --surface2: #162010;
+  --border:   rgba(0,196,122,.15);
+  --border2:  rgba(255,255,255,.06);
+  --text:     #E8F5EE;
+  --text2:    #8BAD98;
+  --text3:    #4D7260;
+  --accent:   #00C47A;
+  --accent2:  #00E591;
+  --amber:    #FFB347;
+  --glow:     0 0 30px rgba(0,196,122,.15);
+  --glow-strong: 0 0 50px rgba(0,196,122,.25);
+  --card-shadow: 0 4px 24px rgba(0,0,0,.4);
+  --topbar-bg: rgba(7,16,12,.9);
+}
+
+/* LIGHT THEME */
+[data-theme="light"] {
+  --bg:       #F0F7F3;
+  --bg2:      #E8F2EC;
+  --surface:  #FFFFFF;
+  --surface2: #F5FAF7;
+  --border:   rgba(0,150,90,.18);
+  --border2:  rgba(0,0,0,.07);
+  --text:     #0A2E1F;
+  --text2:    #2D5C42;
+  --text3:    #5A8A70;
+  --accent:   #007A4C;
+  --accent2:  #009960;
+  --amber:    #C77A00;
+  --glow:     0 2px 12px rgba(0,150,90,.12);
+  --glow-strong: 0 4px 24px rgba(0,150,90,.2);
+  --card-shadow: 0 2px 16px rgba(0,0,0,.08);
+  --topbar-bg: rgba(240,247,243,.92);
+}
+
+/* ── RESET & BASE ────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: var(--ff-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background .3s, color .3s;
+  overflow-x: hidden;
+}
+::selection { background: var(--accent); color: #fff; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+
+/* ── SCROLLBAR ────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ── APP SHELL ────────────────────────────────────────────────────── */
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ── TOPBAR ───────────────────────────────────────────────────────── */
+.topbar {
+  height: 56px;
+  background: var(--topbar-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 16px;
+  position: sticky; top: 0; z-index: 200;
+  transition: var(--t);
+}
+.logo {
+  font-family: var(--ff-mono);
+  font-size: 13px; font-weight: 700;
+  color: var(--accent);
+  letter-spacing: .06em;
+  display: flex; align-items: center; gap: 8px;
+  flex-shrink: 0;
+}
+.logo-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .6; transform: scale(.8); }
+}
+.topbar-title {
+  flex: 1; font-size: 12px; color: var(--text2);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-weight: 500;
+}
+.topbar-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+/* ── TOGGLE BUTTONS ───────────────────────────────────────────────── */
+.toggle-group {
+  display: flex; background: var(--bg2);
+  border: 1px solid var(--border); border-radius: 99px; overflow: hidden;
+}
+.toggle-btn {
+  font-size: 11px; padding: 5px 12px;
+  border: none; background: transparent; cursor: pointer;
+  font-family: var(--ff-body); color: var(--text2);
+  font-weight: 500; transition: var(--t);
+}
+.toggle-btn.active { background: var(--accent); color: #fff; }
+
+.icon-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: var(--text2); transition: var(--t); font-size: 16px;
+}
+.icon-btn:hover { border-color: var(--accent); color: var(--accent); box-shadow: var(--glow); }
+
+/* ── NAV TABS ─────────────────────────────────────────────────────── */
+.navtabs {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; overflow-x: auto;
+  scrollbar-width: none; gap: 0;
+  position: sticky; top: 56px; z-index: 190;
+}
+.navtabs::-webkit-scrollbar { display: none; }
+.navtab {
+  padding: 14px 18px;
+  font-size: 12px; font-weight: 600;
+  border: none; background: transparent; cursor: pointer;
+  color: var(--text3);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 6px;
+  transition: var(--t);
+  font-family: var(--ff-body);
+  letter-spacing: .01em;
+}
+.navtab:hover { color: var(--accent); }
+.navtab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.navtab .tab-icon { font-size: 14px; }
+
+/* ── MAIN + PANELS ────────────────────────────────────────────────── */
+.main { flex: 1; padding: 20px; max-width: 1120px; margin: 0 auto; width: 100%; }
+.panel { display: none; animation: fadeSlideIn .25s ease both; }
+.panel.active { display: block; }
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── HERO ─────────────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  background: linear-gradient(135deg, #0A2E1F 0%, #071810 60%, #0A2E1F 100%);
+  border-radius: var(--r-xl);
+  padding: 40px 32px;
+  margin-bottom: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(0,196,122,.2);
+}
+[data-theme="light"] .hero {
+  background: linear-gradient(135deg, #006B40 0%, #004A2C 60%, #007A4C 100%);
+}
+.hero-canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 0;
+}
+.hero-content { position: relative; z-index: 1; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(0,196,122,.15);
+  border: 1px solid rgba(0,196,122,.3);
+  padding: 5px 14px; border-radius: 99px; margin-bottom: 16px;
+  font-size: 11px; font-family: var(--ff-mono);
+  color: var(--accent2); letter-spacing: .06em;
+}
+.hero-badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent2);
+  box-shadow: 0 0 6px var(--accent2);
+}
+.hero h1 {
+  font-family: var(--ff-display);
+  font-size: clamp(24px, 4vw, 48px);
+  font-weight: 700; line-height: 1.1;
+  color: #fff; margin-bottom: 12px;
+  letter-spacing: -.02em;
+}
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(90deg, var(--accent2), var(--amber));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero p {
+  font-size: 14px; line-height: 1.7;
+  color: rgba(255,255,255,.7); max-width: 560px; margin-bottom: 28px;
+}
+.hero-kpis {
+  display: flex; gap: 12px; flex-wrap: wrap;
+}
+.kpi {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: var(--r-md);
+  padding: 14px 18px; min-width: 120px;
+  backdrop-filter: blur(8px);
+  transition: var(--t);
+}
+.kpi:hover { border-color: rgba(0,196,122,.4); background: rgba(0,196,122,.1); }
+.kpi-val {
+  font-family: var(--ff-mono);
+  font-size: 22px; font-weight: 700; color: #fff;
+  line-height: 1;
+}
+.kpi-val.amber { color: var(--amber); }
+.kpi-val.green { color: var(--accent2); }
+.kpi-lbl { font-size: 10px; color: rgba(255,255,255,.55); margin-top: 5px; line-height: 1.3; }
+
+/* ── SEARCH ───────────────────────────────────────────────────────── */
+.search-row { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+.search-wrap { position: relative; flex: 1; min-width: 220px; }
+.search-wrap input {
+  width: 100%; padding: 11px 14px 11px 40px;
+  font-size: 13px; font-family: var(--ff-body);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text);
+  transition: var(--t);
+}
+.search-wrap input::placeholder { color: var(--text3); }
+.search-wrap input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,196,122,.15); }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text3); }
+.kbd { font-size: 10px; font-family: var(--ff-mono); background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px; color: var(--text3); position: absolute; right: 10px; top: 50%; transform: translateY(-50%); }
+
+/* ── FILTER PILLS ─────────────────────────────────────────────────── */
+.filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.pill {
+  font-size: 11px; padding: 6px 14px;
+  border-radius: 99px; border: 1px solid var(--border);
+  background: transparent; cursor: pointer;
+  color: var(--text2); font-family: var(--ff-body); font-weight: 500;
+  transition: var(--t); white-space: nowrap;
+}
+.pill:hover { border-color: var(--accent); color: var(--accent); }
+.pill.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+.pill.active.risk-high { background: var(--risk-high); border-color: var(--risk-high); color: #fff; }
+.pill.active.risk-mod  { background: var(--risk-mod); border-color: var(--risk-mod); color: #000; }
+.pill.active.risk-low  { background: var(--risk-low); border-color: var(--risk-low); color: #000; }
+
+/* ── DIM SORT PILLS ───────────────────────────────────────────────── */
+.dim-filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+.dim-sort-label { font-size: 11px; color: var(--text3); font-weight: 500; margin-right: 2px; }
+.dpill {
+  font-size: 11px; padding: 5px 12px; border-radius: 99px;
+  border: 1px solid var(--border); background: transparent;
+  cursor: pointer; font-family: var(--ff-body); font-weight: 500;
+  color: var(--text2); transition: var(--t);
+}
+.dpill:hover { border-color: var(--accent); }
+.dpill.active-d1 { background: var(--d1); border-color: var(--d1); color: #000; }
+.dpill.active-d2 { background: var(--d2); border-color: var(--d2); color: #fff; }
+.dpill.active-d3 { background: var(--d3); border-color: var(--d3); color: #fff; }
+.dpill.active-d4 { background: var(--d4); border-color: var(--d4); color: #000; }
+.dpill.active-d5 { background: var(--d5); border-color: var(--d5); color: #000; }
+.dpill.active-hfvs { background: var(--accent); border-color: var(--accent); color: #000; }
+
+/* ── COUNTY GRID ──────────────────────────────────────────────────── */
+.county-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: 10px; margin-bottom: 16px;
+}
+.county-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--r-lg);
+  padding: 16px 14px;
+  cursor: pointer;
+  transition: var(--t);
+  position: relative;
+  overflow: hidden;
+}
+.county-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--risk-low); opacity: 0;
+  transition: var(--t);
+}
+.county-card:hover { border-color: var(--accent); box-shadow: var(--glow); transform: translateY(-2px); }
+.county-card:hover::before { opacity: 1; }
+.county-card.selected { border-color: var(--accent); box-shadow: var(--glow-strong); background: var(--surface2); }
+.county-card.selected::before { opacity: 1; }
+.county-card.risk-high-card::before { background: var(--risk-high); }
+.county-card.risk-mod-card::before { background: var(--risk-mod); }
+.county-card.risk-low-card::before { background: var(--risk-low); }
+
+.county-name { font-size: 12px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+.county-score {
+  font-family: var(--ff-mono);
+  font-size: 22px; font-weight: 700; color: var(--text);
+  line-height: 1;
+}
+.county-rank { font-size: 10px; color: var(--text3); margin-top: 3px; }
+.rank-bar-track {
+  height: 3px; background: var(--border2); border-radius: 99px;
+  margin: 8px 0 6px; overflow: hidden;
+}
+.rank-bar-fill { height: 100%; border-radius: 99px; transition: width .6s ease; }
+
+.mini-bars { display: flex; gap: 2px; align-items: flex-end; height: 22px; margin-top: 4px; }
+.mini-bar { flex: 1; border-radius: 3px; min-height: 4px; transition: var(--t); }
+
+.rbadge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 600; padding: 3px 8px;
+  border-radius: 99px; margin-top: 6px; letter-spacing: .02em;
+}
+.rbadge-high { background: var(--risk-high-bg); color: var(--risk-high); border: 1px solid rgba(255,90,90,.25); }
+.rbadge-mod  { background: var(--risk-mod-bg);  color: var(--risk-mod);  border: 1px solid rgba(255,179,71,.25); }
+.rbadge-low  { background: var(--risk-low-bg);  color: var(--risk-low);  border: 1px solid rgba(0,196,122,.25); }
+
+/* ── COMPARE MODE ─────────────────────────────────────────────────── */
+.compare-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 12px; color: var(--text2);
+}
+.compare-bar-title { font-weight: 600; color: var(--accent); font-size: 12px; }
+.compare-tag {
+  background: var(--accent); color: #000;
+  font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 99px;
+  display: flex; align-items: center; gap: 5px;
+}
+.compare-x {
+  cursor: pointer; opacity: .7;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: rgba(0,0,0,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; transition: var(--t);
+}
+.compare-x:hover { opacity: 1; }
+.compare-btn {
+  margin-left: auto;
+  font-size: 11px; font-weight: 600;
+  background: var(--accent); color: #000;
+  border: none; border-radius: 99px; padding: 6px 14px;
+  cursor: pointer; transition: var(--t);
+}
+.compare-btn:hover { background: var(--accent2); }
+
+/* ── DETAIL PANE ──────────────────────────────────────────────────── */
+.detail-pane {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  margin-bottom: 24px;
+  box-shadow: var(--card-shadow);
+  animation: fadeSlideIn .3s ease both;
+}
+.detail-header {
+  background: linear-gradient(135deg, #0A2E1F 0%, #071810 100%);
+  padding: 28px 28px 24px;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+  flex-wrap: wrap;
+}
+[data-theme="light"] .detail-header {
+  background: linear-gradient(135deg, #006B40 0%, #004A2C 100%);
+}
+.detail-county-name {
+  font-family: var(--ff-display);
+  font-size: 26px; font-weight: 700; color: #fff;
+  line-height: 1.1;
+}
+.detail-region {
+  font-size: 11px; color: rgba(255,255,255,.5);
+  margin-top: 3px; font-family: var(--ff-mono);
+  letter-spacing: .06em;
+}
+.detail-score-block { text-align: right; }
+.detail-score {
+  font-family: var(--ff-mono);
+  font-size: 48px; font-weight: 700; color: #fff;
+  line-height: 1;
+}
+.detail-score-lbl { font-size: 10px; color: rgba(255,255,255,.5); margin-top: 4px; letter-spacing: .06em; }
+.detail-rank-badge {
+  display: inline-block; margin-top: 6px;
+  font-size: 11px; font-family: var(--ff-mono);
+  color: rgba(255,255,255,.6);
+}
+.detail-body { padding: 24px 28px; }
+
+/* ── DIM BREAKDOWN ────────────────────────────────────────────────── */
+.section-title {
+  font-size: 11px; font-weight: 700;
+  color: var(--text3); text-transform: uppercase;
+  letter-spacing: .08em; margin-bottom: 14px;
+}
+.dim-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.dim-label {
+  font-size: 12px; color: var(--text2);
+  width: 160px; flex-shrink: 0; line-height: 1.3; font-weight: 500;
+}
+.dim-bar-track {
+  flex: 1; background: var(--border2);
+  border-radius: 99px; height: 10px; overflow: hidden;
+  position: relative;
+}
+.dim-bar-fill { height: 100%; border-radius: 99px; transition: width .8s cubic-bezier(.4,0,.2,1); }
+.dim-val {
+  font-family: var(--ff-mono); font-size: 12px; font-weight: 700;
+  width: 38px; text-align: right; flex-shrink: 0;
+}
+.badge-worst {
+  font-size: 9px; font-weight: 700; letter-spacing: .04em;
+  color: var(--risk-high); background: var(--risk-high-bg);
+  border: 1px solid rgba(255,90,90,.2);
+  padding: 2px 8px; border-radius: 99px; flex-shrink: 0;
+}
+.badge-best {
+  font-size: 9px; font-weight: 700; letter-spacing: .04em;
+  color: var(--risk-low); background: var(--risk-low-bg);
+  border: 1px solid rgba(0,196,122,.2);
+  padding: 2px 8px; border-radius: 99px; flex-shrink: 0;
+}
+
+/* ── KEY STATS GRID ───────────────────────────────────────────────── */
+.key-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0; }
+.ks {
+  background: var(--bg2); border-radius: var(--r-md);
+  padding: 14px; text-align: center; border: 1px solid var(--border2);
+}
+.ks-val { font-family: var(--ff-mono); font-size: 20px; font-weight: 700; }
+.ks-lbl { font-size: 10px; color: var(--text3); margin-top: 4px; line-height: 1.3; }
+
+/* ── INSIGHT BOX ──────────────────────────────────────────────────── */
+.insight {
+  background: var(--risk-low-bg);
+  border: 1px solid rgba(0,196,122,.2);
+  border-left: 4px solid var(--risk-low);
+  border-radius: var(--r-md); padding: 14px 16px; margin: 14px 0;
+}
+.insight.warn {
+  background: var(--risk-mod-bg);
+  border-color: rgba(255,179,71,.2); border-left-color: var(--risk-mod);
+}
+.insight.danger {
+  background: var(--risk-high-bg);
+  border-color: rgba(255,90,90,.2); border-left-color: var(--risk-high);
+}
+.insight-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .07em; margin-bottom: 6px; color: var(--risk-low);
+}
+.insight.warn .insight-label { color: var(--risk-mod); }
+.insight.danger .insight-label { color: var(--risk-high); }
+.insight-text { font-size: 12px; line-height: 1.75; color: var(--text); }
+
+/* ── COMPARE VS NATIONAL ──────────────────────────────────────────── */
+.compare-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.compare-lbl { font-size: 11px; color: var(--text2); width: 50px; flex-shrink: 0; font-weight: 500; }
+.compare-track {
+  flex: 1; background: var(--border2); border-radius: 99px;
+  height: 6px; overflow: hidden;
+}
+.compare-fill { height: 100%; border-radius: 99px; transition: width .6s ease; }
+.compare-val { font-family: var(--ff-mono); font-size: 11px; font-weight: 600; width: 36px; text-align: right; flex-shrink: 0; }
+.compare-label-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.compare-name { font-size: 11px; color: var(--text2); font-weight: 600; flex: 1; }
+
+/* ── RADAR ────────────────────────────────────────────────────────── */
+.radar-wrap { display: flex; justify-content: center; padding: 10px 0; }
+
+/* ── AI PANEL ─────────────────────────────────────────────────────── */
+.ai-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg); background: var(--surface);
+  margin-top: 20px; overflow: hidden;
+}
+.ai-header {
+  background: var(--surface2); border-bottom: 1px solid var(--border);
+  padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;
+}
+.ai-header-left { display: flex; align-items: center; gap: 10px; }
+.ai-indicator { display: flex; align-items: center; gap: 6px; }
+.ai-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+  box-shadow: 0 0 8px var(--accent); animation: pulse-dot 2s infinite;
+}
+.ai-title-text { font-size: 13px; font-weight: 600; color: var(--text); }
+.ai-sub-text { font-size: 11px; color: var(--text3); margin-top: 1px; }
+.ai-messages {
+  padding: 14px 16px; min-height: 80px; max-height: 340px;
+  overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+}
+.ai-msg { font-size: 12px; line-height: 1.75; white-space: pre-wrap; }
+.ai-msg.user {
+  background: var(--bg2); border-radius: var(--r-md);
+  padding: 10px 14px; align-self: flex-end; max-width: 85%;
+  color: var(--text2); font-size: 12px;
+  border: 1px solid var(--border2);
+}
+.ai-msg.assistant {
+  background: var(--risk-low-bg);
+  border: 1px solid rgba(0,196,122,.2);
+  border-radius: var(--r-md); padding: 12px 14px;
+  font-size: 12px; color: var(--text);
+}
+.ai-msg.thinking { color: var(--text3); font-style: italic; font-size: 12px; }
+.ai-quick { display: flex; gap: 6px; padding: 0 16px 10px; flex-wrap: wrap; }
+.ai-qbtn {
+  font-size: 11px; padding: 5px 12px; border-radius: 99px;
+  border: 1px solid var(--border); background: transparent;
+  cursor: pointer; color: var(--text2); font-family: var(--ff-body);
+  transition: var(--t); text-align: left;
+}
+.ai-qbtn:hover { background: var(--risk-low-bg); border-color: var(--accent); color: var(--accent); }
+.ai-input-row {
+  display: flex; gap: 8px; padding: 10px 16px;
+  border-top: 1px solid var(--border); background: var(--surface2);
+}
+.ai-input-row textarea {
+  flex: 1; padding: 9px 12px; font-size: 12px; font-family: var(--ff-body);
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  background: var(--surface); color: var(--text); resize: none;
+  min-height: 38px; max-height: 120px; transition: var(--t);
+}
+.ai-input-row textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,196,122,.12); }
+.ai-send {
+  padding: 9px 18px; background: var(--accent); color: #000;
+  border: none; border-radius: var(--r-md); cursor: pointer;
+  font-size: 12px; font-family: var(--ff-body); font-weight: 700;
+  flex-shrink: 0; transition: var(--t); align-self: flex-end;
+}
+.ai-send:hover { background: var(--accent2); transform: scale(1.02); }
+.ai-send:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+/* ── NATIONAL PANEL ───────────────────────────────────────────────── */
+.stat-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px; margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--r-lg); padding: 16px;
+  transition: var(--t);
+}
+.stat-card:hover { border-color: var(--accent); box-shadow: var(--glow); transform: translateY(-2px); }
+.stat-val {
+  font-family: var(--ff-mono); font-size: 24px; font-weight: 700;
+  color: var(--accent); line-height: 1;
+}
+.stat-lbl { font-size: 11px; color: var(--text2); margin-top: 6px; line-height: 1.4; }
+.stat-sub { font-size: 10px; color: var(--text3); margin-top: 4px; }
+
+.section-head {
+  font-size: 15px; font-weight: 700; margin: 0 0 16px;
+  color: var(--text); display: flex; align-items: center; gap: 10px;
+  font-family: var(--ff-display);
+}
+.section-head .head-badge {
+  font-family: var(--ff-mono); font-size: 10px;
+  color: var(--text3); font-weight: 400;
+  background: var(--bg2); border: 1px solid var(--border);
+  padding: 3px 8px; border-radius: 99px;
+}
+
+/* ── LEADERBOARD ──────────────────────────────────────────────────── */
+.lb-table {
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg); overflow: hidden; margin-bottom: 24px;
+}
+.lb-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 16px; border-bottom: 1px solid var(--border2);
+  cursor: pointer; transition: var(--t);
+}
+.lb-row:last-child { border-bottom: none; }
+.lb-row:hover { background: var(--surface2); }
+.lb-pos {
+  font-family: var(--ff-mono); font-size: 12px;
+  color: var(--text3); width: 28px; text-align: center; flex-shrink: 0;
+}
+.lb-name { flex: 1; font-size: 13px; font-weight: 600; color: var(--text); }
+.lb-region { font-size: 10px; color: var(--text3); margin-top: 1px; }
+.lb-mini-bars { display: flex; gap: 2px; width: 80px; flex-shrink: 0; align-items: flex-end; height: 20px; }
+.lb-score { font-family: var(--ff-mono); font-size: 13px; font-weight: 700; width: 44px; text-align: right; flex-shrink: 0; }
+
+/* ── WEIGHT CHART ─────────────────────────────────────────────────── */
+.weight-card {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: var(--r-lg); padding: 20px 24px; margin-bottom: 24px;
+}
+
+/* ── STAKEHOLDER GRID ─────────────────────────────────────────────── */
+.stk-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px; margin-bottom: 24px;
+}
+.stk-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--r-lg); padding: 20px;
+  transition: var(--t);
+  display: flex; flex-direction: column;
+}
+.stk-card:hover { border-color: var(--accent); box-shadow: var(--glow); transform: translateY(-2px); }
+.stk-icon-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.stk-emoji { font-size: 32px; }
+.stk-role { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); }
+.stk-name { font-size: 14px; font-weight: 700; color: var(--text); margin-top: 2px; }
+.stk-number { font-family: var(--ff-mono); font-size: 22px; font-weight: 700; margin: 12px 0 4px; }
+.stk-num-lbl { font-size: 10px; color: var(--text3); margin-bottom: 12px; line-height: 1.4; }
+.stk-desc { font-size: 12px; line-height: 1.75; color: var(--text2); flex: 1; margin-bottom: 14px; }
+.stk-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700;
+  color: var(--accent); background: var(--risk-low-bg);
+  border: 1px solid rgba(0,196,122,.25);
+  border-radius: 99px; padding: 7px 14px;
+  cursor: pointer; transition: var(--t); font-family: var(--ff-body);
+  align-self: flex-start;
+}
+.stk-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+
+/* ── METHOD CARDS ─────────────────────────────────────────────────── */
+.method-card {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: var(--r-lg); padding: 20px 24px; margin-bottom: 14px;
+}
+.method-title {
+  font-size: 14px; font-weight: 700; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px; color: var(--text);
+  font-family: var(--ff-display);
+}
+.method-body { font-size: 13px; line-height: 1.8; color: var(--text2); }
+.method-body b { color: var(--text); font-weight: 600; }
+.eq {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r-sm); padding: 12px 16px;
+  font-family: var(--ff-mono); font-size: 12px; margin: 10px 0;
+  color: var(--accent2); overflow-x: auto;
+}
+
+/* ── MWANANCHI GUIDE ──────────────────────────────────────────────── */
+.guide-step { display: flex; gap: 16px; margin-bottom: 20px; align-items: flex-start; }
+.guide-num {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--accent); color: #000;
+  font-family: var(--ff-mono); font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 2px;
+  box-shadow: 0 0 12px rgba(0,196,122,.3);
+}
+.guide-content h3 { font-size: 13px; font-weight: 700; margin-bottom: 5px; color: var(--text); }
+.guide-content p { font-size: 12px; color: var(--text2); line-height: 1.75; }
+
+/* ── DIMENSION PILLS (legend) ─────────────────────────────────────── */
+.dim-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.dim-leg-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); font-weight: 500; }
+.dim-leg-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+/* ── TOAST ────────────────────────────────────────────────────────── */
+#toast-container {
+  position: fixed; bottom: 80px; right: 20px; z-index: 1000;
+  display: flex; flex-direction: column; gap: 8px; pointer-events: none;
+}
+.toast {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 12px 16px;
+  font-size: 13px; color: var(--text);
+  box-shadow: var(--card-shadow);
+  animation: toastIn .3s ease;
+  pointer-events: auto; min-width: 240px;
+  display: flex; align-items: center; gap: 10px;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── SCROLL TO TOP ────────────────────────────────────────────────── */
+#scroll-top {
+  position: fixed; bottom: 24px; right: 24px; z-index: 500;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--accent); color: #000;
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 700;
+  box-shadow: 0 4px 16px rgba(0,196,122,.4);
+  transition: var(--t); opacity: 0;
+  transform: translateY(10px);
+}
+#scroll-top.visible { opacity: 1; transform: translateY(0); }
+#scroll-top:hover { background: var(--accent2); transform: translateY(-2px); }
+
+/* ── MODAL ────────────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(7,16,12,.7);
+  backdrop-filter: blur(8px);
+  z-index: 300; display: flex;
+  align-items: flex-end; justify-content: center; padding: 16px;
+}
+[data-theme="light"] .modal-overlay { background: rgba(0,50,30,.5); }
+.modal-box {
+  background: var(--surface);
+  border-radius: var(--r-xl) var(--r-xl) var(--r-md) var(--r-md);
+  width: 100%; max-width: 640px;
+  max-height: 80vh; overflow: hidden;
+  display: flex; flex-direction: column;
+  box-shadow: 0 -8px 40px rgba(0,0,0,.3);
+  animation: modalUp .3s cubic-bezier(.4,0,.2,1);
+}
+@keyframes modalUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+.modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.modal-title { font-size: 14px; font-weight: 700; color: var(--text); }
+.modal-close {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1px solid var(--border); background: transparent;
+  cursor: pointer; color: var(--text2); font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--t); line-height: 1;
+}
+.modal-close:hover { background: var(--risk-high-bg); color: var(--risk-high); }
+.modal-body { flex: 1; overflow-y: auto; }
+
+/* ── COMPARE VIEW ─────────────────────────────────────────────────── */
+.compare-view {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  padding: 20px;
+}
+.compare-col { }
+.compare-col-name {
+  font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 4px;
+  font-family: var(--ff-display);
+}
+.compare-col-score { font-family: var(--ff-mono); font-size: 32px; font-weight: 700; }
+.compare-dim-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.compare-dim-label { font-size: 11px; width: 28px; font-family: var(--ff-mono); font-weight: 700; flex-shrink: 0; }
+.compare-dim-track { flex: 1; background: var(--border2); border-radius: 99px; height: 8px; overflow: hidden; }
+.compare-dim-fill { height: 100%; border-radius: 99px; }
+.compare-dim-val { font-family: var(--ff-mono); font-size: 11px; font-weight: 700; width: 30px; text-align: right; flex-shrink: 0; }
+.compare-winner { color: var(--risk-low); }
+.compare-loser  { color: var(--risk-high); }
+
+/* ── SEPARATOR ────────────────────────────────────────────────────── */
+.sep { height: 1px; background: var(--border2); margin: 18px 0; }
+
+/* ── RESPONSIVE ───────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .main { padding: 12px; }
+  .hero { padding: 24px 18px; }
+  .hero h1 { font-size: 22px; }
+  .hero-kpis { gap: 8px; }
+  .kpi { min-width: auto; padding: 10px 12px; }
+  .detail-header { flex-direction: column; }
+  .detail-score-block { text-align: left; }
+  .key-stats { grid-template-columns: 1fr 1fr; }
+  .stk-grid { grid-template-columns: 1fr; }
+  .county-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .navtab { padding: 11px 12px; font-size: 11px; }
+  .dim-label { width: 110px; font-size: 11px; }
+  .compare-view { grid-template-columns: 1fr; }
+  .detail-body { padding: 16px 18px; }
+  .detail-county-name { font-size: 20px; }
+  .detail-score { font-size: 36px; }
+}
+
+/* ── LANG UTILS ───────────────────────────────────────────────────── */
+body.sw .en { display: none !important; }
+body.sw .sw { display: initial !important; }
+body:not(.sw) .sw { display: none !important; }
+span.sw, span.en { display: inline; }
+div.sw, div.en { display: block; }
+
+/* ── UTIL ─────────────────────────────────────────────────────────── */
+.tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; letter-spacing: .03em; }
+.tag-red    { background: var(--risk-high-bg); color: var(--risk-high); border: 1px solid rgba(255,90,90,.2); }
+.tag-amber  { background: var(--risk-mod-bg);  color: var(--risk-mod);  border: 1px solid rgba(255,179,71,.2); }
+.tag-green  { background: var(--risk-low-bg);  color: var(--risk-low);  border: 1px solid rgba(0,196,122,.2); }
+
+/* ── PRINT ────────────────────────────────────────────────────────── */
+@media print {
+  .topbar, .navtabs, .ai-panel, #scroll-top, #toast-container { display: none; }
+  .panel { display: block !important; }
+  body { background: white; color: black; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- TOPBAR -->
+<nav class="topbar">
+  <div class="logo">
+    <div class="logo-dot"></div>
+    HFVS·KE
+  </div>
+  <div class="topbar-title">
+    <span class="en">Kenya Housing Financial Vulnerability Score — 47 Counties · KHS 2023/24</span>
+    <span class="sw">Alama ya Udhaifu wa Fedha za Makazi — Kaunti 47 · KHS 2023/24</span>
+  </div>
+  <div class="topbar-actions">
+    <div class="toggle-group">
+      <button class="toggle-btn active" onclick="setLang('en')">EN</button>
+      <button class="toggle-btn" onclick="setLang('sw')">SW</button>
+    </div>
+    <button class="icon-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle theme" aria-label="Toggle dark/light mode">🌙</button>
+    <button class="icon-btn" onclick="showExportModal()" title="Export data" aria-label="Export">📤</button>
+  </div>
+</nav>
+
+<!-- NAV TABS -->
+<nav class="navtabs" role="tablist">
+  <button class="navtab active" onclick="switchTab('explore')" role="tab" aria-selected="true">
+    <span class="tab-icon">🗺️</span>
+    <span class="en">Explore Counties</span><span class="sw">Tafuta Kaunti</span>
+  </button>
+  <button class="navtab" onclick="switchTab('national')" role="tab">
+    <span class="tab-icon">📊</span>
+    <span class="en">National Picture</span><span class="sw">Picha ya Taifa</span>
+  </button>
+  <button class="navtab" onclick="switchTab('stakeholders')" role="tab">
+    <span class="tab-icon">🤝</span>
+    <span class="en">Who Should Act</span><span class="sw">Wadau</span>
+  </button>
+  <button class="navtab" onclick="switchTab('mwananchi')" role="tab">
+    <span class="tab-icon">🏠</span>
+    <span class="en">For Everyone</span><span class="sw">Kwa Kila Mtu</span>
+  </button>
+  <button class="navtab" onclick="switchTab('method')" role="tab">
+    <span class="tab-icon">🔬</span>
+    <span class="en">How It Works</span><span class="sw">Jinsi Inavyofanya Kazi</span>
+  </button>
+</nav>
+
+<main class="main">
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- EXPLORE PANEL -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<section id="panel-explore" class="panel active" role="tabpanel">
+
+  <div class="hero">
+    <canvas class="hero-canvas" id="heroCanvas"></canvas>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        <span class="en">KHS 2023/24 · n = 21,347 households · All 47 counties</span>
+        <span class="sw">KHS 2023/24 · n = kaya 21,347 · Kaunti zote 47</span>
+      </div>
+      <h1>
+        <span class="en">Kenya Housing <em>Vulnerability</em> Atlas</span>
+        <span class="sw">Ramani ya <em>Udhaifu</em> wa Makazi Kenya</span>
+      </h1>
+      <p class="en">Select any county to explore its five-dimension vulnerability profile, compare against the national average, and get AI-powered policy recommendations. Higher HFVS = more vulnerable.</p>
+      <p class="sw">Chagua kaunti yoyote kuona profaili yake ya vipimo vitano vya udhaifu, kulinganisha na wastani wa taifa, na kupata mapendekezo ya sera yanayoendeshwa na AI. HFVS kubwa = udhaifu mkubwa zaidi.</p>
+      <div class="hero-kpis">
+        <div class="kpi"><div class="kpi-val" id="kpi-counties">47</div><div class="kpi-lbl"><span class="en">Counties mapped</span><span class="sw">Kaunti zimepigwa ramani</span></div></div>
+        <div class="kpi"><div class="kpi-val amber" id="kpi-vuln">40%</div><div class="kpi-lbl"><span class="en">Highly vulnerable</span><span class="sw">Udhaifu mkubwa</span></div></div>
+        <div class="kpi"><div class="kpi-val green" id="kpi-hfvs">0.324</div><div class="kpi-lbl"><span class="en">National mean HFVS</span><span class="sw">Wastani wa HFVS</span></div></div>
+        <div class="kpi"><div class="kpi-val" id="kpi-hh">21,347</div><div class="kpi-lbl"><span class="en">Households surveyed</span><span class="sw">Kaya zilizochunguzwa</span></div></div>
+        <div class="kpi"><div class="kpi-val amber" id="kpi-auc">0.989</div><div class="kpi-lbl"><span class="en">XGBoost AUC</span><span class="sw">AUC ya XGBoost</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARE BAR (hidden initially) -->
+  <div class="compare-bar" id="compareBar" style="display:none">
+    <span class="compare-bar-title en">Compare Mode</span>
+    <span class="compare-bar-title sw">Hali ya Kulinganisha</span>
+    <div id="compareTags" style="display:flex;gap:6px;flex-wrap:wrap;flex:1"></div>
+    <button class="compare-btn" onclick="openCompareModal()">
+      <span class="en">View Side-by-Side →</span>
+      <span class="sw">Ona Sambamba →</span>
+    </button>
+    <button class="icon-btn" onclick="clearCompare()" title="Clear compare" style="width:28px;height:28px;font-size:13px">✕</button>
+  </div>
+
+  <div class="search-row">
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 20 20" fill="none" width="16" height="16">
+        <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/>
+        <path d="m14 14 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input type="text" id="countySearch"
+        placeholder="Search counties… / Tafuta kaunti… (Ctrl+K)"
+        oninput="filterCounties()" aria-label="Search counties"/>
+      <span class="kbd en" style="display:none" id="kbdHint">⌘K</span>
+    </div>
+    <div class="filter-pills">
+      <button class="pill active" onclick="setRiskFilter('all',this)"><span class="en">All</span><span class="sw">Zote</span></button>
+      <button class="pill risk-high" onclick="setRiskFilter('high',this)"><span class="en">High Risk</span><span class="sw">Hatari Kubwa</span></button>
+      <button class="pill risk-mod" onclick="setRiskFilter('mod',this)"><span class="en">Moderate</span><span class="sw">Ya Kati</span></button>
+      <button class="pill risk-low" onclick="setRiskFilter('low',this)"><span class="en">Lower Risk</span><span class="sw">Hatari Ndogo</span></button>
+    </div>
+  </div>
+
+  <div class="dim-filter-row">
+    <span class="dim-sort-label"><span class="en">Sort worst:</span><span class="sw">Panga:</span></span>
+    <button class="dpill active-hfvs" data-dim="hfvs" onclick="setDimSort('hfvs',this)"><span class="en">Composite</span><span class="sw">Jumla</span></button>
+    <button class="dpill" data-dim="d1" onclick="setDimSort('d1',this)">D1 Financial</button>
+    <button class="dpill" data-dim="d2" onclick="setDimSort('d2',this)">D2 Tenure</button>
+    <button class="dpill" data-dim="d3" onclick="setDimSort('d3',this)">D3 Hazard</button>
+    <button class="dpill" data-dim="d4" onclick="setDimSort('d4',this)">D4 Dwelling</button>
+    <button class="dpill" data-dim="d5" onclick="setDimSort('d5',this)">D5 Utility</button>
+    <button class="dpill" onclick="showCompareHint()" style="margin-left:auto" title="Click 2+ counties to compare">
+      <span class="en">+ Compare</span><span class="sw">+ Linganisha</span>
+    </button>
+  </div>
+
+  <div class="dim-legend">
+    <div class="dim-leg-item"><div class="dim-leg-dot" style="background:var(--d1)"></div>D1 Financial</div>
+    <div class="dim-leg-item"><div class="dim-leg-dot" style="background:var(--d2)"></div>D2 Tenure</div>
+    <div class="dim-leg-item"><div class="dim-leg-dot" style="background:var(--d3)"></div>D3 Hazard</div>
+    <div class="dim-leg-item"><div class="dim-leg-dot" style="background:var(--d4)"></div>D4 Dwelling</div>
+    <div class="dim-leg-item"><div class="dim-leg-dot" style="background:var(--d5)"></div>D5 Utility</div>
+    <div class="dim-leg-item" style="margin-left:auto;font-size:10px;color:var(--text3)">
+      <span class="en">Click card to explore · Click 2 to compare</span>
+      <span class="sw">Bonyeza kadi kuangalia · Bonyeza 2 kulinganisha</span>
+    </div>
+  </div>
+
+  <div class="county-grid" id="countyGrid" role="list"></div>
+  <div id="countyDetail"></div>
+
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- NATIONAL PANEL -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<section id="panel-national" class="panel" role="tabpanel">
+
+  <div class="section-head">
+    <span class="en">National Statistics</span><span class="sw">Takwimu za Taifa</span>
+    <span class="head-badge">KHS 2023/24 · KNBS</span>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-val">21,347</div><div class="stat-lbl en">Households surveyed across 47 counties</div><div class="stat-lbl sw">Kaya katika kaunti 47</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--risk-high)">40%</div><div class="stat-lbl en">Above 60th percentile — highly vulnerable</div><div class="stat-lbl sw">Juu ya asilimia 60 — udhaifu mkubwa</div></div>
+    <div class="stat-card"><div class="stat-val">1.81%</div><div class="stat-lbl en">Triple-exposed (flood + no tenure + rent stress)</div><div class="stat-lbl sw">Mfiduo wa tatu</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--risk-high)">3.90%</div><div class="stat-lbl en">Urban triple-exposure — 25.8× higher than rural</div><div class="stat-lbl sw">Mfiduo wa tatu mjini — mara 25.8 zaidi ya vijijini</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--risk-high)">96.8%</div><div class="stat-lbl en">No formal loan access nationally</div><div class="stat-lbl sw">Hawana mkopo rasmi kitaifa</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--risk-high)">96.6%</div><div class="stat-lbl en">Cook with solid fuel (driving D5)</div><div class="stat-lbl sw">Kupika kwa kuni au mkaa</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--risk-mod)">43.7%</div><div class="stat-lbl en">No grid electricity connection</div><div class="stat-lbl sw">Hawana umeme wa gridi</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--risk-mod)">54.8%</div><div class="stat-lbl en">Rent-stressed renters (&gt;30% of expenditure)</div><div class="stat-lbl sw">Msongo wa kodi</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--risk-mod)">54.5%</div><div class="stat-lbl en">No land ownership nationally</div><div class="stat-lbl sw">Hawana umiliki wa ardhi</div></div>
+    <div class="stat-card"><div class="stat-val">38.2%</div><div class="stat-lbl en">Overcrowded households (&gt;2 persons/room)</div><div class="stat-lbl sw">Msongamano wa kaya</div></div>
+  </div>
+
+  <div class="weight-card">
+    <div class="section-head" style="margin-bottom:18px">
+      <span class="en">Effective Dimension Weights — Why D5 Dominates</span>
+      <span class="sw">Uzito wa Vipimo — Kwa Nini D5 Inatawala</span>
+    </div>
+    <div id="weightBars"></div>
+    <div class="insight warn" style="margin-top:16px">
+      <div class="insight-label en">Weight Audit Finding</div>
+      <div class="insight-label sw">Matokeo ya Ukaguzi wa Uzito</div>
+      <div class="insight-text en">96.6% of Kenyan households cook with solid fuel and 43.7% have no grid electricity. This near-universal deprivation inflates D5's effective weight to <strong>34.3%</strong> — far above its stated 20%. D3 Physical Hazard is suppressed to 6.2% because six proximity sub-columns were absent from the 2023/24 survey extract.</div>
+      <div class="insight-text sw">Asilimia 96.6 ya kaya za Kenya zinapika kwa kuni/mkaa na asilimia 43.7 hazina umeme wa gridi. Ukosefu huu unafanya D5 ionekane kwa asilimia <strong>34.3</strong> — zaidi ya asilimia 20 iliyopangwa. D3 imeshuka hadi asilimia 6.2.</div>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <span class="en">10 Most Vulnerable Counties</span>
+    <span class="sw">Kaunti 10 Zenye Udhaifu Zaidi</span>
+  </div>
+  <div class="lb-table" id="topLeaderboard"></div>
+
+  <div class="sep"></div>
+  <div class="section-head">
+    <span class="en">10 Least Vulnerable Counties</span>
+    <span class="sw">Kaunti 10 Zenye Udhaifu Kidogo</span>
+  </div>
+  <div class="lb-table" id="bottomLeaderboard"></div>
+
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- STAKEHOLDERS PANEL -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<section id="panel-stakeholders" class="panel" role="tabpanel">
+  <div class="section-head">
+    <span class="en">Who Needs to Act — and With Which Number</span>
+    <span class="sw">Nani Anapaswa Kutenda — na Takwimu Gani</span>
+  </div>
+  <div class="stk-grid" id="stakeholderGrid"></div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- MWANANCHI PANEL -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<section id="panel-mwananchi" class="panel" role="tabpanel">
+  <div class="hero">
+    <canvas class="hero-canvas" id="heroCanvas2"></canvas>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        For Everyone / Kwa Kila Mtu
+      </div>
+      <h1>
+        <span class="en">Understanding Your County's <em>Housing Vulnerability</em></span>
+        <span class="sw">Kuelewa <em>Udhaifu wa Makazi</em> katika Kaunti Yako</span>
+      </h1>
+      <p class="en">No jargon. Plain language for every Kenyan — tenant, homeowner, student, farmer, or community leader.</p>
+      <p class="sw">Hakuna maneno magumu. Lugha ya kawaida kwa kila Mkenya.</p>
+    </div>
+  </div>
+
+  <div class="method-card">
+    <div class="method-title">🏠 <span class="en">What is the HFVS score?</span><span class="sw">Ni nini Alama ya HFVS?</span></div>
+    <div class="method-body">
+      <p class="en">The Housing Financial Vulnerability Score (HFVS) measures how hard it is for families in your county to afford safe, secure housing. It combines five problems into one number between 0 and 1. <strong>A score closer to 1 means more hardship.</strong></p>
+      <p class="sw">Alama ya Udhaifu wa Fedha za Makazi (HFVS) inapima jinsi ilivyo vigumu kwa familia kupata makazi salama. Inaunganisha matatizo matano katika nambari moja kati ya 0 na 1. <strong>Alama karibu na 1 inamaanisha ugumu zaidi.</strong></p>
+    </div>
+  </div>
+
+  <div class="method-card">
+    <div class="method-title">📊 <span class="en">The Five Problems Measured</span><span class="sw">Matatizo Matano Yanayopimwa</span></div>
+    <div class="method-body">
+      <div style="display:grid;gap:14px;margin-top:8px">
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--d1);color:#000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;box-shadow:0 0 12px rgba(79,195,247,.3)">D1</div>
+          <div><div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:4px"><span class="en">Financial Stress</span><span class="sw">Msongo wa Fedha</span></div><div style="font-size:12px;color:var(--text2);line-height:1.7"><span class="en">Paying too much income on rent, having no savings, and being unable to access any loan when you need one.</span><span class="sw">Kulipa sehemu kubwa ya mapato kwa kodi, kutokuwa na akiba, na kushindwa kupata mkopo.</span></div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--d2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;box-shadow:0 0 12px rgba(155,89,182,.3)">D2</div>
+          <div><div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:4px"><span class="en">Tenure Insecurity</span><span class="sw">Kukosa Haki ya Ardhi</span></div><div style="font-size:12px;color:var(--text2);line-height:1.7"><span class="en">Renting without a written lease, living on disputed land, or having no title deed. One argument and you could lose your home.</span><span class="sw">Kupanga bila mkataba wa maandishi, kuishi kwenye ardhi inayoshindaniwa, au kukosa hati miliki.</span></div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--d3);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;box-shadow:0 0 12px rgba(231,76,60,.3)">D3</div>
+          <div><div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:4px"><span class="en">Physical Hazard</span><span class="sw">Hatari ya Mazingira</span></div><div style="font-size:12px;color:var(--text2);line-height:1.7"><span class="en">Living in a flood zone or mudslide-prone hillside. One heavy rain season can destroy everything.</span><span class="sw">Kuishi katika eneo la mafuriko au kilima kinachoweza kuteleza. Msimu mmoja wa mvua kubwa unaweza kuharibu kila kitu.</span></div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--d4);color:#000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;box-shadow:0 0 12px rgba(243,156,18,.3)">D4</div>
+          <div><div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:4px"><span class="en">Dwelling Quality</span><span class="sw">Ubora wa Makazi</span></div><div style="font-size:12px;color:var(--text2);line-height:1.7"><span class="en">Grass or leaking iron-sheet roofs, mud walls, earthen floors, and too many people in too small a space.</span><span class="sw">Paa za nyasi au bati zinazovuja, kuta za udongo, sakafu ya udongo, na watu wengi katika nafasi ndogo.</span></div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--d5);color:#000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;box-shadow:0 0 12px rgba(0,196,122,.3)">D5</div>
+          <div><div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:4px"><span class="en">Utility Deprivation</span><span class="sw">Ukosefu wa Huduma</span></div><div style="font-size:12px;color:var(--text2);line-height:1.7"><span class="en">No electricity, cooking with firewood/charcoal, no clean water. <strong>This is the biggest national driver — affecting 96.6% of households.</strong></span><span class="sw">Hakuna umeme, kupika kwa kuni au mkaa. <strong>Hii ndiyo sababu kubwa zaidi nchini — inayoathiri asilimia 96.6.</strong></span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="method-card">
+    <div class="method-title">🔍 <span class="en">How to Read Your County Score in 3 Steps</span><span class="sw">Jinsi ya Kusoma Alama ya Kaunti Yako kwa Hatua 3</span></div>
+    <div style="margin-top:12px">
+      <div class="guide-step">
+        <div class="guide-num">1</div>
+        <div class="guide-content">
+          <h3><span class="en">Go to "Explore Counties" tab</span><span class="sw">Nenda kwenye "Tafuta Kaunti"</span></h3>
+          <p><span class="en">Type your county name in the search box. Tap the card to open its full profile.</span><span class="sw">Andika jina la kaunti yako kwenye sanduku la utafutaji. Gonga kadi kufungua maelezo yake.</span></p>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">2</div>
+        <div class="guide-content">
+          <h3><span class="en">Find the longest bar — that's the biggest problem</span><span class="sw">Tafuta mstari mrefu zaidi — hiyo ndiyo tatizo kubwa zaidi</span></h3>
+          <p><span class="en">The "Worst" badge highlights your county's most critical dimension (D1–D5). The comparison bars show how you rank against the national average.</span><span class="sw">Beji ya "Mbaya Zaidi" inaonyesha kipimo muhimu zaidi cha kaunti yako (D1–D5).</span></p>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">3</div>
+        <div class="guide-content">
+          <h3><span class="en">Ask Claude what can be done</span><span class="sw">Uliza Claude inachoweza kufanywa</span></h3>
+          <p><span class="en">The AI Policy Advisor at the bottom of every county profile generates specific recommendations. Ask follow-up questions in plain language — English or Swahili.</span><span class="sw">Mshauri wa Sera wa AI chini ya kila profaili ya kaunti anatoa mapendekezo maalum. Unaweza kuuliza kwa Kiswahili au Kiingereza.</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="method-card">
+    <div class="method-title">📣 <span class="en">What You Can Do With This Information</span><span class="sw">Unachoweza Kufanya na Taarifa Hii</span></div>
+    <div class="method-body">
+      <p class="en">If you are a <b>voter or community member</b>: ask your MCA or MP what they are doing about the dimension your county scores worst on. This data is from the Kenya National Bureau of Statistics — official and verifiable.</p>
+      <p class="sw">Kama wewe ni <b>mpiga kura au mwanajamii</b>: uliza MCA wako au Mbunge wako wanachofanya kuhusu kipimo ambacho kaunti yako ina alama mbaya zaidi.</p>
+      <br/>
+      <p class="en">If you are a <b>county official or MCA</b>: the dimension breakdown tells you exactly which budget line to prioritise. D5 → electrification and clean cookstoves. D2 → land registration and legal aid. D3 → drainage and flood mapping.</p>
+      <p class="sw">Kama wewe ni <b>afisa wa kaunti au MCA</b>: D5 inamaanisha umeme na jiko safi. D2 inamaanisha usajili wa ardhi na msaada wa kisheria. D3 inamaanisha mifereji ya maji.</p>
+      <br/>
+      <p class="en">If you are a <b>journalist or researcher</b>: the HFVS is derived from KNBS Kenya Housing Survey 2023/24 (n = 21,347). It is freely citable. See the "How It Works" tab for the full methodology.</p>
+      <p class="sw">Kama wewe ni <b>mwandishi wa habari au mtafiti</b>: HFVS inatokana na KNBS Kenya Housing Survey 2023/24 (n = kaya 21,347). Inaweza kutumiwa bure.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- METHOD PANEL -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<section id="panel-method" class="panel" role="tabpanel">
+
+  <div class="method-card">
+    <div class="method-title">📐 <span class="en">The HFVS Formula</span><span class="sw">Fomula ya HFVS</span></div>
+    <div class="eq">HFVS_i = (D1_i + D2_i + D3_i + D4_i + D5_i) / 5 &nbsp;&nbsp; [equal weights, n = 21,347]</div>
+    <div class="method-body">
+      <span class="en">Each dimension is normalised to [0,1] via z-score standardisation followed by min-max rescaling, then averaged equally. County estimates are survey-weighted using the KNBS sampling design (ratio 327.6×).</span>
+      <span class="sw">Kila kipimo kinasanifishwa hadi [0,1] kupitia usanifishaji wa z-score ikifuatiwa na upimaji wa min-max, kisha wastani sawa. Makadirio ya kaunti yana uzito wa utafiti wa KNBS (uwiano 327.6×).</span>
+    </div>
+  </div>
+
+  <div class="method-card">
+    <div class="method-title">📏 <span class="en">Five Dimensions — Full Specification</span><span class="sw">Vipimo Vitano — Maelezo Kamili</span></div>
+    <div class="method-body">
+      <div style="display:grid;gap:16px">
+        <div style="border-left:3px solid var(--d1);padding-left:12px">
+          <b style="color:var(--d1)">D1 — Financial Stress (Effective weight: 23.7%)</b><br/>
+          <span class="en">Rent-to-expenditure burden (&gt;30% threshold), absence of formal savings, no formal/informal loan access. Key stat: 96.8% have no formal loan instrument.</span>
+          <span class="sw">Mzigo wa kodi kwa matumizi (&gt;30%), kukosa akiba rasmi, hakuna mkopo. Takwimu: Asilimia 96.8 hawana chombo chochote cha mkopo rasmi.</span>
+        </div>
+        <div style="border-left:3px solid var(--d2);padding-left:12px">
+          <b style="color:var(--d2)">D2 — Tenure Insecurity (Effective weight: 13.8%)</b><br/>
+          <span class="en">Land ownership status, written lease presence, active parcel disputes, informal settlement indicator. Key stat: 54.5% report no land ownership nationally.</span>
+          <span class="sw">Hali ya umiliki wa ardhi, mkataba wa maandishi, migogoro ya viwanja. Takwimu: Asilimia 54.5 hawana umiliki wa ardhi.</span>
+        </div>
+        <div style="border-left:3px solid var(--d3);padding-left:12px">
+          <b style="color:var(--d3)">D3 — Physical Hazard (Effective weight: 6.2%)</b><br/>
+          <span class="en">Flood zone designation, mudslide zone exposure. Note: six proximity sub-columns absent from the 2023/24 extract suppressed D3. Key stats: 19.1% in flood zones; 12.6% in mudslide zones.</span>
+          <span class="sw">Eneo la mafuriko, maporomoko ya udongo. Kumbuka: vipande sita vya ukaribu havikuwepo, kupunguza uzito wa D3. Takwimu: 19.1% katika maeneo ya mafuriko.</span>
+        </div>
+        <div style="border-left:3px solid var(--d4);padding-left:12px">
+          <b style="color:var(--d4)">D4 — Dwelling Quality (Effective weight: 22.0%)</b><br/>
+          <span class="en">Roof/wall/floor material durability, occupancy density (&gt;2 persons/room). Key stat: 38.2% of households are overcrowded.</span>
+          <span class="sw">Uimara wa nyenzo za paa/kuta/sakafu, msongamano wa kukaa. Takwimu: Asilimia 38.2 wamezidi watu.</span>
+        </div>
+        <div style="border-left:3px solid var(--d5);padding-left:12px">
+          <b style="color:var(--d5)">D5 — Utility Deprivation (Effective weight: 34.3%)</b><br/>
+          <span class="en">Grid electricity, cooking fuel (solid = deprived), improved water source, improved sanitation. Dominates due to near-universal solid-fuel cooking (96.6%) and limited grid access (43.7% unconnected).</span>
+          <span class="sw">Umeme wa gridi, mafuta ya kupikia, maji bora, usafi. Inatawala kutokana na upikaji wa kuni (96.6%) na upatikanaji mdogo wa umeme (43.7% hawajaunganishwa).</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="method-card">
+    <div class="method-title">📊 <span class="en">Statistical Validation</span><span class="sw">Uthibitisho wa Takwimu</span></div>
+    <div class="method-body">
+      <span class="en">All five dimension scores are significantly non-normal (Shapiro-Wilk p&lt;0.001; KS p&lt;0.001 for all). Parametric and nonparametric methods were run in parallel; all substantive decisions agree.<br/><br/>
+      Urban households score higher than rural (Welch t=9.78, d=0.12; Mann-Whitney r=0.067). Female-headed households face elevated vulnerability (t=5.21, d=0.07). Education gradient exists (ANOVA η²=0.015). All effect sizes are small — the HFVS is not reducible to demographic proxies.<br/><br/>
+      The proxy ML model (isotonic-calibrated LightGBM-XGBoost blend) achieves <strong>AUC=0.782</strong> and <strong>Brier=0.186</strong> on held-out data, with county-level Spearman ρ=0.960. The Brier score falls below the 0.22 actuarial threshold, enabling direct premium loading applications.</span>
+      <span class="sw">Alama zote za vipimo vitano haziko katika usambazaji wa kawaida (Shapiro-Wilk p&lt;0.001). Njia za parametric na non-parametric zilitekelezwa sambamba.<br/><br/>
+      Kaya za mijini zinapata alama za juu zaidi kuliko vijijini (Welch t=9.78, d=0.12). Mfano wa ML unafikia <strong>AUC=0.782</strong> na <strong>Brier=0.186</strong> — chini ya kizingiti cha 0.22 cha uaktuwali.</span>
+    </div>
+  </div>
+
+  <div class="method-card">
+    <div class="method-title">🗄️ <span class="en">Data Source & Citation</span><span class="sw">Chanzo cha Data na Nukuu</span></div>
+    <div class="method-body">
+      <span class="en"><b>Kenya Housing Survey 2023/24</b> · Kenya National Bureau of Statistics (KNBS) · Stratified multi-stage cluster sampling · 47 counties · 21,347 households · 392 raw variables · Survey weight ratio 327.6× · Fieldwork: July 2023 – March 2024.<br/><br/>
+      <b>Academic Citation:</b> [Author]. (2026). Modelling Housing-Based Financial Vulnerability and Insurance Risk Among Kenyan Households. MSc Dissertation, Strathmore University, Nairobi. Data: KNBS, KHS 2023/24.</span>
+      <span class="sw"><b>Utafiti wa Makazi wa Kenya 2023/24</b> · KNBS · Kaunti 47 · Kaya 21,347 · Ukusanyaji: Julai 2023 – Machi 2024.</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- SCROLL TO TOP -->
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Scroll to top">↑</button>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container" role="status" aria-live="polite"></div>
+
+<!-- MODAL CONTAINER -->
+<div id="modal-container"></div>
+
+</div><!-- /app -->
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   DATA — 47 COUNTIES
+═══════════════════════════════════════════════════════════════════ */
+const COUNTIES = [
+  {name:'Tana River',     hfvs:.432,d1:.71,d2:.38,d3:.22,d4:.68,d5:.82,rank:1, triple:2.18,mortgage:.77, region:'Coast'},
+  {name:'Kisumu',         hfvs:.411,d1:.62,d2:.55,d3:.29,d4:.52,d5:.74,rank:2, triple:7.16,mortgage:1.75,region:'Nyanza'},
+  {name:'West Pokot',     hfvs:.408,d1:.44,d2:.29,d3:.18,d4:.71,d5:.91,rank:3, triple:.10, mortgage:.38, region:'Rift Valley'},
+  {name:'Lamu',           hfvs:.406,d1:.58,d2:.52,d3:.31,d4:.49,d5:.78,rank:4, triple:.37, mortgage:.48, region:'Coast'},
+  {name:'Bomet',          hfvs:.403,d1:.41,d2:.31,d3:.12,d4:.66,d5:.88,rank:5, triple:.04, mortgage:.74, region:'Rift Valley'},
+  {name:'Isiolo',         hfvs:.401,d1:.46,d2:.44,d3:.35,d4:.58,d5:.76,rank:6, triple:3.97,mortgage:.31, region:'North Eastern'},
+  {name:'Homa Bay',       hfvs:.399,d1:.43,d2:.38,d3:.27,d4:.62,d5:.80,rank:7, triple:1.48,mortgage:1.01,region:'Nyanza'},
+  {name:'Trans Nzoia',    hfvs:.396,d1:.45,d2:.35,d3:.21,d4:.59,d5:.82,rank:8, triple:1.03,mortgage:1.42,region:'Rift Valley'},
+  {name:'Migori',         hfvs:.393,d1:.48,d2:.41,d3:.19,d4:.55,d5:.77,rank:9, triple:.88, mortgage:2.40,region:'Nyanza'},
+  {name:'Busia',          hfvs:.391,d1:.42,d2:.36,d3:.14,d4:.61,d5:.84,rank:10,triple:.51, mortgage:.00, region:'Western'},
+  {name:'Garissa',        hfvs:.385,d1:.39,d2:.48,d3:.41,d4:.57,d5:.75,rank:11,triple:.62, mortgage:.00, region:'North Eastern'},
+  {name:'Turkana',        hfvs:.382,d1:.36,d2:.29,d3:.31,d4:.73,d5:.88,rank:12,triple:.09, mortgage:.12, region:'Rift Valley'},
+  {name:'Narok',          hfvs:.379,d1:.38,d2:.32,d3:.15,d4:.64,d5:.86,rank:13,triple:.11, mortgage:.55, region:'Rift Valley'},
+  {name:'Mandera',        hfvs:.376,d1:.35,d2:.31,d3:.28,d4:.69,d5:.85,rank:14,triple:.07, mortgage:.00, region:'North Eastern'},
+  {name:'Marsabit',       hfvs:.374,d1:.33,d2:.27,d3:.24,d4:.72,d5:.89,rank:15,triple:.05, mortgage:.00, region:'North Eastern'},
+  {name:'Wajir',          hfvs:.371,d1:.34,d2:.30,d3:.26,d4:.68,d5:.86,rank:16,triple:.04, mortgage:.00, region:'North Eastern'},
+  {name:'Vihiga',         hfvs:.368,d1:.47,d2:.39,d3:.11,d4:.58,d5:.78,rank:17,triple:.22, mortgage:.00, region:'Western'},
+  {name:'Siaya',          hfvs:.366,d1:.44,d2:.36,d3:.18,d4:.55,d5:.76,rank:18,triple:.44, mortgage:.89, region:'Nyanza'},
+  {name:'Samburu',        hfvs:.363,d1:.31,d2:.25,d3:.22,d4:.71,d5:.88,rank:19,triple:.06, mortgage:.00, region:'Rift Valley'},
+  {name:'Kakamega',       hfvs:.361,d1:.43,d2:.35,d3:.14,d4:.56,d5:.77,rank:20,triple:.31, mortgage:1.22,region:'Western'},
+  {name:'Elgeyo-Marakwet',hfvs:.358,d1:.40,d2:.33,d3:.16,d4:.57,d5:.79,rank:21,triple:.15, mortgage:.68, region:'Rift Valley'},
+  {name:'Bungoma',        hfvs:.356,d1:.42,d2:.34,d3:.13,d4:.54,d5:.76,rank:22,triple:.28, mortgage:1.01,region:'Western'},
+  {name:'Baringo',        hfvs:.354,d1:.38,d2:.31,d3:.25,d4:.58,d5:.80,rank:23,triple:.19, mortgage:.44, region:'Rift Valley'},
+  {name:'Nandi',          hfvs:.352,d1:.40,d2:.32,d3:.15,d4:.56,d5:.77,rank:24,triple:.12, mortgage:.77, region:'Rift Valley'},
+  {name:'Nyamira',        hfvs:.350,d1:.41,d2:.33,d3:.12,d4:.55,d5:.75,rank:25,triple:.09, mortgage:.55, region:'Nyanza'},
+  {name:'Kisii',          hfvs:.348,d1:.42,d2:.34,d3:.14,d4:.54,d5:.73,rank:26,triple:.11, mortgage:1.12,region:'Nyanza'},
+  {name:'Laikipia',       hfvs:.346,d1:.39,d2:.36,d3:.21,d4:.51,d5:.71,rank:27,triple:.33, mortgage:.98, region:'Central'},
+  {name:'Taita-Taveta',   hfvs:.344,d1:.38,d2:.35,d3:.26,d4:.49,d5:.69,rank:28,triple:.27, mortgage:.62, region:'Coast'},
+  {name:'Kwale',          hfvs:.342,d1:.37,d2:.38,d3:.28,d4:.46,d5:.70,rank:29,triple:.41, mortgage:.48, region:'Coast'},
+  {name:'Embu',           hfvs:.340,d1:.40,d2:.33,d3:.17,d4:.49,d5:.71,rank:30,triple:.14, mortgage:1.05,region:'Eastern'},
+  {name:'Nyandarua',      hfvs:.338,d1:.38,d2:.31,d3:.14,d4:.51,d5:.73,rank:31,triple:.08, mortgage:.77, region:'Central'},
+  {name:"Murang'a",       hfvs:.336,d1:.39,d2:.32,d3:.13,d4:.49,d5:.70,rank:32,triple:.10, mortgage:1.23,region:'Central'},
+  {name:'Kilifi',         hfvs:.334,d1:.36,d2:.39,d3:.24,d4:.45,d5:.68,rank:33,triple:.35, mortgage:.55, region:'Coast'},
+  {name:'Makueni',        hfvs:.332,d1:.38,d2:.32,d3:.17,d4:.48,d5:.68,rank:34,triple:.12, mortgage:.89, region:'Eastern'},
+  {name:'Kitui',          hfvs:.330,d1:.37,d2:.31,d3:.19,d4:.46,d5:.67,rank:35,triple:.11, mortgage:.72, region:'Eastern'},
+  {name:'Uasin Gishu',    hfvs:.328,d1:.44,d2:.43,d3:.18,d4:.41,d5:.60,rank:36,triple:.55, mortgage:1.88,region:'Rift Valley'},
+  {name:'Kirinyaga',      hfvs:.326,d1:.38,d2:.31,d3:.14,d4:.44,d5:.65,rank:37,triple:.09, mortgage:1.12,region:'Central'},
+  {name:'Kericho',        hfvs:.324,d1:.39,d2:.32,d3:.16,d4:.43,d5:.63,rank:38,triple:.07, mortgage:.94, region:'Rift Valley'},
+  {name:'Meru',           hfvs:.321,d1:.37,d2:.30,d3:.15,d4:.42,d5:.65,rank:39,triple:.08, mortgage:1.07,region:'Eastern'},
+  {name:'Machakos',       hfvs:.318,d1:.39,d2:.33,d3:.15,d4:.40,d5:.62,rank:40,triple:.14, mortgage:1.22,region:'Eastern'},
+  {name:'Kajiado',        hfvs:.315,d1:.43,d2:.44,d3:.21,d4:.36,d5:.55,rank:41,triple:.62, mortgage:1.55,region:'Rift Valley'},
+  {name:'Nakuru',         hfvs:.312,d1:.41,d2:.40,d3:.17,d4:.37,d5:.58,rank:42,triple:.38, mortgage:1.77,region:'Rift Valley'},
+  {name:'Mombasa',        hfvs:.308,d1:.58,d2:.61,d3:.44,d4:.28,d5:.31,rank:43,triple:9.88,mortgage:2.10,region:'Coast'},
+  {name:'Tharaka-Nithi',  hfvs:.305,d1:.35,d2:.37,d3:.27,d4:.38,d5:.59,rank:44,triple:.39, mortgage:.44, region:'Eastern'},
+  {name:'Kiambu',         hfvs:.302,d1:.42,d2:.44,d3:.14,d4:.33,d5:.52,rank:45,triple:.28, mortgage:2.15,region:'Central'},
+  {name:'Nyeri',          hfvs:.298,d1:.39,d2:.35,d3:.13,d4:.34,d5:.54,rank:46,triple:.11, mortgage:1.88,region:'Central'},
+  {name:'Nairobi',        hfvs:.295,d1:.54,d2:.63,d3:.42,d4:.22,d5:.24,rank:47,triple:14.73,mortgage:3.21,region:'Nairobi'},
+];
+
+const NAT = {d1:.421,d2:.370,d3:.213,d4:.519,d5:.720};
+const DC = {d1:'#4FC3F7',d2:'#9B59B6',d3:'#E74C3C',d4:'#F39C12',d5:'#00C47A'};
+const DN_EN = {d1:'Financial Stress',d2:'Tenure Insecurity',d3:'Physical Hazard',d4:'Dwelling Quality',d5:'Utility Deprivation'};
+const DN_SW = {d1:'Msongo wa Fedha',d2:'Kukosa Haki ya Ardhi',d3:'Hatari ya Mazingira',d4:'Ubora wa Makazi',d5:'Ukosefu wa Huduma'};
+const DW = {d1:.237,d2:.138,d3:.062,d4:.220,d5:.343};
+
+let lang='en', riskFilter='all', dimSort='hfvs', selectedCounty=null, searchVal='';
+let compareList=[], aiHistory={}, stkHistory={};
+
+/* ── THEME ──────────────────────────────────────────────────────── */
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  document.getElementById('theme-btn').textContent = next==='dark'?'🌙':'☀️';
+  toast('🎨 '+(next==='dark'?'Dark mode on':'Light mode on'));
+}
+
+/* ── LANG ───────────────────────────────────────────────────────── */
+function setLang(l){
+  lang=l;
+  document.body.classList.toggle('sw',l==='sw');
+  document.querySelectorAll('.toggle-btn').forEach((b,i)=>b.classList.toggle('active',i===(l==='en'?0:1)));
+  if(selectedCounty) selectCounty(selectedCounty,true);
+}
+
+/* ── TAB ────────────────────────────────────────────────────────── */
+function switchTab(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.navtab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  const map={explore:0,national:1,stakeholders:2,mwananchi:3,method:4};
+  document.querySelectorAll('.navtab')[map[id]]?.classList.add('active');
+}
+
+/* ── RISK HELPERS ───────────────────────────────────────────────── */
+function riskLevel(h){return h>=.39?'high':h>=.33?'mod':'low';}
+function riskEn(h){return h>=.39?'High Risk':h>=.33?'Moderate Risk':'Lower Risk';}
+function riskSw(h){return h>=.39?'Hatari Kubwa':h>=.33?'Hatari ya Kati':'Hatari Ndogo';}
+function riskLabel(h){return lang==='sw'?riskSw(h):riskEn(h);}
+function riskBadge(h){return 'rbadge rbadge-'+riskLevel(h);}
+function worstDim(c){return ['d1','d2','d3','d4','d5'].sort((a,b)=>c[b]-c[a])[0];}
+function bestDim(c){return ['d1','d2','d3','d4','d5'].sort((a,b)=>c[a]-c[b])[0];}
+
+/* ── MINI BARS ──────────────────────────────────────────────────── */
+function miniBarHtml(c){
+  return ['d1','d2','d3','d4','d5'].map(d=>`<div class="mini-bar" style="height:${Math.round(c[d]*20)+2}px;background:${DC[d]};opacity:.85;border-radius:3px"></div>`).join('');
+}
+
+/* ── HERO CANVAS ────────────────────────────────────────────────── */
+function initCanvas(id){
+  const canvas=document.getElementById(id);
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  let frame,particles=[];
+  const N=50;
+  const resize=()=>{canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;};
+  resize();
+  window.addEventListener('resize',resize);
+  for(let i=0;i<N;i++) particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+.5,alpha:Math.random()*.35+.05});
+  const draw=()=>{
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach((p,i)=>{
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0)p.x=canvas.width; if(p.x>canvas.width)p.x=0;
+      if(p.y<0)p.y=canvas.height; if(p.y>canvas.height)p.y=0;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(0,196,122,${p.alpha})`;ctx.fill();
+      for(let j=i+1;j<particles.length;j++){
+        const q=particles[j],dist=Math.hypot(p.x-q.x,p.y-q.y);
+        if(dist<80){ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.strokeStyle=`rgba(0,196,122,${.05*(1-dist/80)})`;ctx.stroke();}
+      }
+    });
+    frame=requestAnimationFrame(draw);
+  };
+  draw();
+}
+
+/* ── RADAR ──────────────────────────────────────────────────────── */
+function radarSVG(c,size=180){
+  const cx=size/2,cy=size/2,r=size*.36;
+  const dims=['d1','d2','d3','d4','d5'];
+  const angles=dims.map((_,i)=>-Math.PI/2+i*(2*Math.PI/5));
+  let svg=`<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">`;
+  [.25,.5,.75,1].forEach(f=>{
+    const pts=angles.map(a=>`${cx+r*f*Math.cos(a)},${cy+r*f*Math.sin(a)}`).join(' ');
+    svg+=`<polygon points="${pts}" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="0.5"/>`;
+  });
+  angles.forEach(a=>`<line x1="${cx}" y1="${cy}" x2="${cx+r*Math.cos(a)}" y2="${cy+r*Math.sin(a)}" stroke="rgba(255,255,255,.06)" stroke-width="0.5"/>`);
+  angles.forEach(a=>{svg+=`<line x1="${cx}" y1="${cy}" x2="${cx+r*Math.cos(a)}" y2="${cy+r*Math.sin(a)}" stroke="rgba(255,255,255,.06)" stroke-width="0.5"/>`;});
+  // National avg
+  const np=dims.map((d,i)=>`${cx+r*NAT[d]*Math.cos(angles[i])},${cy+r*NAT[d]*Math.sin(angles[i])}`).join(' ');
+  svg+=`<polygon points="${np}" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.25)" stroke-width="1" stroke-dasharray="3,2"/>`;
+  // County
+  const cp=dims.map((d,i)=>`${cx+r*c[d]*Math.cos(angles[i])},${cy+r*c[d]*Math.sin(angles[i])}`).join(' ');
+  const rl=riskLevel(c.hfvs);
+  const fc=rl==='high'?'rgba(255,90,90,.2)':rl==='mod'?'rgba(255,179,71,.15)':'rgba(0,196,122,.15)';
+  const sc=rl==='high'?'#FF5A5A':rl==='mod'?'#FFB347':'#00C47A';
+  svg+=`<polygon points="${cp}" fill="${fc}" stroke="${sc}" stroke-width="1.5"/>`;
+  dims.forEach((d,i)=>{
+    const v=c[d],px=cx+r*v*Math.cos(angles[i]),py=cy+r*v*Math.sin(angles[i]);
+    svg+=`<circle cx="${px}" cy="${py}" r="4" fill="${DC[d]}" stroke="rgba(0,0,0,.3)" stroke-width="1.5"/>`;
+  });
+  dims.forEach((_,i)=>{
+    const lx=cx+(r+18)*Math.cos(angles[i]),ly=cy+(r+18)*Math.sin(angles[i]);
+    svg+=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="Space Mono,monospace" font-weight="700" fill="${DC[dims[i]]}">${dims[i].toUpperCase()}</text>`;
+  });
+  svg+=`</svg>`;
+  return svg;
+}
+
+/* ── FILTERED LIST ──────────────────────────────────────────────── */
+function getFiltered(){
+  return COUNTIES.filter(c=>{
+    const ms=c.name.toLowerCase().includes(searchVal.toLowerCase());
+    const mr=riskFilter==='all'||riskLevel(c.hfvs)===riskFilter;
+    return ms&&mr;
+  }).sort((a,b)=>dimSort==='hfvs'?b.hfvs-a.hfvs:b[dimSort]-a[dimSort]);
+}
+
+/* ── RENDER GRID ────────────────────────────────────────────────── */
+function renderGrid(){
+  const filtered=getFiltered();
+  const rl=riskLevel;
+  document.getElementById('countyGrid').innerHTML=filtered.map(c=>{
+    const level=rl(c.hfvs);
+    const inCompare=compareList.includes(c.name);
+    return `<div class="county-card risk-${level}-card${selectedCounty===c.name?' selected':''}${inCompare?' selected':''}" 
+      onclick="selectCounty('${esc(c.name)}')" 
+      role="listitem" tabindex="0"
+      onkeydown="if(event.key==='Enter')selectCounty('${esc(c.name)}')"
+      aria-label="${c.name}, HFVS ${c.hfvs.toFixed(3)}, Rank ${c.rank}">
+      <div class="county-name">${c.name}</div>
+      <div class="county-score" style="color:${level==='high'?'var(--risk-high)':level==='mod'?'var(--risk-mod)':'var(--risk-low)'}">${c.hfvs.toFixed(3)}</div>
+      <div class="county-rank">Rank ${c.rank} / 47 · ${c.region}</div>
+      <div class="rank-bar-track"><div class="rank-bar-fill" style="width:${Math.round((1-c.rank/47)*100)}%;background:${level==='high'?'var(--risk-high)':level==='mod'?'var(--risk-mod)':'var(--risk-low)'}"></div></div>
+      <span class="${riskBadge(c.hfvs)}">${riskLabel(c.hfvs)}</span>
+      <div class="mini-bars">${miniBarHtml(c)}</div>
+      ${inCompare?'<div style="position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;background:var(--accent);color:#000;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center">✓</div>':''}
+    </div>`;
+  }).join('');
+}
+
+/* ── SELECT / DETAIL ────────────────────────────────────────────── */
+function selectCounty(name, skipCompare=false){
+  const c=COUNTIES.find(x=>x.name===name);
+  if(!c) return;
+
+  // Compare mode: toggle into list
+  if(!skipCompare && compareList.length>0 && !selectedCounty){
+    if(!compareList.includes(name)&&compareList.length<2){ compareList.push(name); updateCompareBar(); renderGrid(); return; }
+  }
+
+  selectedCounty=name;
+  renderGrid();
+
+  const worst=worstDim(c), best=bestDim(c);
+  const dims=['d1','d2','d3','d4','d5'].slice().sort((a,b)=>c[b]-c[a]);
+  const level=riskLevel(c.hfvs);
+  const insightClass=level==='high'?'danger':level==='mod'?'warn':'';
+  const key=name.replace(/\s/g,'_');
+
+  document.getElementById('countyDetail').innerHTML=`
+<div class="detail-pane">
+  <div class="detail-header">
+    <div>
+      <div style="font-size:10px;color:rgba(255,255,255,.5);margin-bottom:6px;font-family:var(--ff-mono);letter-spacing:.08em">
+        ${c.region.toUpperCase()} · RANK ${c.rank}/47
+      </div>
+      <div class="detail-county-name">${c.name} County</div>
+      <div class="detail-region">Kenya Housing Survey 2023/24</div>
+      <span class="${riskBadge(c.hfvs)}" style="margin-top:10px;display:inline-flex">${riskLabel(c.hfvs)}</span>
+    </div>
+    <div class="detail-score-block">
+      <div class="detail-score" style="color:${level==='high'?'#FF5A5A':level==='mod'?'#FFB347':'#00C47A'}">${c.hfvs.toFixed(3)}</div>
+      <div class="detail-score-lbl">HFVS COMPOSITE SCORE</div>
+      <div class="detail-rank-badge">National mean: 0.362</div>
+    </div>
+  </div>
+  <div class="detail-body">
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start">
+      <div style="flex:1;min-width:220px">
+        <div class="section-title"><span class="en">Five-dimension breakdown — worst first</span><span class="sw">Vipimo vitano — kutoka mbaya zaidi</span></div>
+        ${dims.map(d=>`
+          <div class="dim-row">
+            <div class="dim-label" style="color:${DC[d]}">${d.toUpperCase()}: ${lang==='sw'?DN_SW[d]:DN_EN[d]}</div>
+            <div class="dim-bar-track">
+              <div class="dim-bar-fill" style="width:${Math.round(c[d]*100)}%;background:${DC[d]}"></div>
+            </div>
+            <div class="dim-val" style="color:${DC[d]}">${Math.round(c[d]*100)}%</div>
+            ${d===worst?`<span class="badge-worst"><span class="en">Worst</span><span class="sw">Mbaya</span></span>`:''}
+            ${d===best?`<span class="badge-best"><span class="en">Best</span><span class="sw">Bora</span></span>`:''}
+          </div>
+        `).join('')}
+      </div>
+      <div class="radar-wrap">${radarSVG(c)}</div>
+    </div>
+
+    <div class="key-stats">
+      <div class="ks">
+        <div class="ks-val" style="color:${c.triple>5?'var(--risk-high)':c.triple>2?'var(--risk-mod)':'var(--risk-low)'}">${c.triple.toFixed(2)}%</div>
+        <div class="ks-lbl"><span class="en">Triple-exposed households</span><span class="sw">Kaya zenye mfiduo wa tatu</span></div>
+      </div>
+      <div class="ks">
+        <div class="ks-val" style="color:${c.mortgage<.5?'var(--risk-high)':c.mortgage<1.5?'var(--risk-mod)':'var(--risk-low)'}">${c.mortgage.toFixed(2)}%</div>
+        <div class="ks-lbl"><span class="en">Mortgage penetration</span><span class="sw">Ufikiaji wa mikopo</span></div>
+      </div>
+      <div class="ks">
+        <div class="ks-val" style="color:${c.hfvs>.37&&c.mortgage<1?'var(--risk-high)':'var(--risk-low)'}">${c.hfvs>.37&&c.mortgage<1?'Critical':'Moderate'}</div>
+        <div class="ks-lbl"><span class="en">Finance gap tier</span><span class="sw">Pengo la fedha</span></div>
+      </div>
+    </div>
+
+    <div class="insight ${insightClass}">
+      <div class="insight-label"><span class="en">Primary Driver: ${DN_EN[worst]}</span><span class="sw">Kiendeshaji Kikuu: ${DN_SW[worst]}</span></div>
+      <div class="insight-text"><span class="en">${dimInsightEn(worst,c)}</span><span class="sw">${dimInsightSw(worst,c)}</span></div>
+    </div>
+
+    <div class="sep"></div>
+    <div class="section-title"><span class="en">Compare to National Average</span><span class="sw">Linganisha na Wastani wa Taifa</span></div>
+    ${['d1','d2','d3','d4','d5'].map(d=>`
+      <div style="margin-bottom:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:11px;font-weight:700;color:${DC[d]}">${d.toUpperCase()} ${lang==='sw'?DN_SW[d]:DN_EN[d]}</span>
+        </div>
+        <div class="compare-row">
+          <div class="compare-lbl">${c.name.split('-')[0].split(' ')[0]}</div>
+          <div class="compare-track"><div class="compare-fill" style="width:${Math.round(c[d]*100)}%;background:${DC[d]}"></div></div>
+          <div class="compare-val" style="color:${DC[d]}">${Math.round(c[d]*100)}%</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-lbl" style="color:var(--text3)"><span class="en">National</span><span class="sw">Taifa</span></div>
+          <div class="compare-track"><div class="compare-fill" style="width:${Math.round(NAT[d]*100)}%;background:var(--text3)"></div></div>
+          <div class="compare-val" style="color:var(--text3)">${Math.round(NAT[d]*100)}%</div>
+        </div>
+      </div>
+    `).join('')}
+
+    <div class="sep"></div>
+    <div class="ai-panel" id="ai-${key}">
+      <div class="ai-header">
+        <div class="ai-header-left">
+          <div class="ai-indicator"><div class="ai-dot"></div></div>
+          <div>
+            <div class="ai-title-text"><span class="en">AI Policy Advisor — ${c.name}</span><span class="sw">Mshauri wa Sera — ${c.name}</span></div>
+            <div class="ai-sub-text"><span class="en">Ask about interventions, budget priorities, or what scores mean</span><span class="sw">Uliza kuhusu hatua za makazi au maana ya alama</span></div>
+          </div>
+        </div>
+        <button class="icon-btn" onclick="shareCounty('${esc(name)}')" title="Share county profile" style="width:28px;height:28px;font-size:13px">🔗</button>
+      </div>
+      <div class="ai-messages" id="ai-msgs-${key}">
+        <div class="ai-msg thinking"><span class="en">Ask me anything about housing vulnerability in ${c.name} County — policy options, what the scores mean, or who needs to act.</span><span class="sw">Niulize chochote kuhusu udhaifu wa makazi katika Kaunti ya ${c.name}.</span></div>
+      </div>
+      <div class="ai-quick" id="ai-quick-${key}">
+        <button class="ai-qbtn" onclick="aiQuick('${esc(name)}','What specific policies should ${c.name} County prioritise to reduce its HFVS score of ${c.hfvs.toFixed(3)}?')">
+          <span class="en">Top policy priorities?</span><span class="sw">Vipaumbele vya sera?</span>
+        </button>
+        <button class="ai-qbtn" onclick="aiQuick('${esc(name)}','Explain what the ${Math.round(c[worst]*100)}% score on ${DN_EN[worst]} means in plain language for families in ${c.name} County')">
+          <span class="en">What does ${DN_EN[worst]} score mean?</span><span class="sw">Alama ya ${DN_SW[worst]} inamaanisha nini?</span>
+        </button>
+        <button class="ai-qbtn" onclick="aiQuick('${esc(name)}','Which stakeholders should take the most urgent action in ${c.name} County based on its HFVS rank of ${c.rank}/47?')">
+          <span class="en">Who should act most urgently?</span><span class="sw">Nani anapaswa kutenda haraka?</span>
+        </button>
+      </div>
+      <div class="ai-input-row">
+        <textarea id="ai-inp-${key}" rows="1" placeholder="${lang==='sw'?'Uliza swali lolote kuhusu '+c.name+'...':'Ask anything about '+c.name+'...'}" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();aiSend('${esc(name)}');}"></textarea>
+        <button class="ai-send" onclick="aiSend('${esc(name)}')">
+          <span class="en">Ask →</span><span class="sw">Uliza →</span>
+        </button>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="stk-btn" onclick="addToCompare('${esc(name)}')">
+        <span class="en">+ Add to Compare</span><span class="sw">+ Ongeza Kulinganisha</span>
+      </button>
+      <button class="stk-btn" onclick="exportCountyText('${esc(name)}')" style="background:var(--bg2);color:var(--text2)">
+        <span class="en">Export Profile</span><span class="sw">Hamisha Profaili</span>
+      </button>
+    </div>
+  </div>
+</div>`;
+
+  document.getElementById('countyDetail').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+/* ── DIM INSIGHTS ───────────────────────────────────────────────── */
+function dimInsightEn(k,c){
+  const v=Math.round(c[k]*100);
+  return {
+    d1:`Financial stress is the primary driver at ${v}%. Rent-to-expenditure burden and absence of formal credit are the main causes. Priority: rent stabilisation and microfinance expansion.`,
+    d2:`Tenure insecurity leads at ${v}%. High rates of informal renting without written leases and land disputes dominate. Priority: land registration drives and legal aid access.`,
+    d3:`Physical hazard exposure is highest at ${v}%. Significant flood and mudslide zone residence is the concern. Priority: drainage infrastructure and hazard zone relocation programmes.`,
+    d4:`Poor dwelling quality scores ${v}%. Non-durable roofing, walls, flooring and overcrowding are the priority. Priority: building materials subsidy and upgrading programmes.`,
+    d5:`Utility deprivation dominates at ${v}%. Near-universal solid-fuel cooking and absent grid electricity require immediate action. Priority: rural electrification and clean cookstove subsidy.`
+  }[k];
+}
+function dimInsightSw(k,c){
+  const v=Math.round(c[k]*100);
+  return {
+    d1:`Msongo wa fedha ni kiendeshaji kikuu kwa asilimia ${v}%. Mzigo wa kodi na kukosa mkopo rasmi ni sababu kuu. Kipaumbele: Udhibiti wa kodi na upanuzi wa fedha ndogo ndogo.`,
+    d2:`Kukosa usalama wa makazi kunafika asilimia ${v}%. Ukodishaji holela na migogoro ya ardhi inatawala. Kipaumbele: Usajili wa ardhi na msaada wa kisheria.`,
+    d3:`Mfiduo wa hatari ya kimwili kwa asilimia ${v}%. Maeneo ya mafuriko na maporomoko ya udongo. Kipaumbele: Mifereji ya maji na uhamishaji wa maeneo ya hatari.`,
+    d4:`Ubora mbaya wa makazi kwa asilimia ${v}%. Paa, kuta na sakafu zisizo na uimara. Kipaumbele: Ruzuku ya vifaa vya ujenzi.`,
+    d5:`Ukosefu wa huduma kwa asilimia ${v}%. Upikaji wa kuni na kukosa umeme wa gridi. Kipaumbele: Umeme wa vijijini na ruzuku ya jiko safi.`
+  }[k];
+}
+
+/* ── COMPARE ────────────────────────────────────────────────────── */
+function addToCompare(name){
+  if(compareList.includes(name)){ toast('Already in compare'); return; }
+  if(compareList.length>=2){ toast('Compare supports up to 2 counties. Clear first.'); return; }
+  compareList.push(name);
+  selectedCounty=null;
+  updateCompareBar();
+  renderGrid();
+  toast(`✓ Added ${name} to compare`);
+}
+function clearCompare(){ compareList=[]; updateCompareBar(); renderGrid(); }
+function showCompareHint(){ toast('Click any county card to add it to compare mode'); }
+function updateCompareBar(){
+  const bar=document.getElementById('compareBar');
+  if(compareList.length===0){ bar.style.display='none'; return; }
+  bar.style.display='flex';
+  document.getElementById('compareTags').innerHTML=compareList.map(n=>`
+    <div class="compare-tag">${n}<span class="compare-x" onclick="removeCompare('${esc(n)}')">✕</span></div>
+  `).join('');
+}
+function removeCompare(name){ compareList=compareList.filter(n=>n!==name); updateCompareBar(); renderGrid(); }
+function openCompareModal(){
+  if(compareList.length<2){ toast('Select 2 counties to compare'); return; }
+  const [n1,n2]=compareList;
+  const c1=COUNTIES.find(x=>x.name===n1),c2=COUNTIES.find(x=>x.name===n2);
+  const dims=['d1','d2','d3','d4','d5'];
+  const modalHtml=`
+<div class="modal-overlay" onclick="if(event.target.classList.contains('modal-overlay'))closeModal()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title"><span class="en">Side-by-Side Comparison</span><span class="sw">Ulinganisho wa Pamoja</span></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="compare-view">
+        <div class="compare-col">
+          <div class="compare-col-name">${c1.name}</div>
+          <div class="compare-col-score" style="color:${riskLevel(c1.hfvs)==='high'?'var(--risk-high)':riskLevel(c1.hfvs)==='mod'?'var(--risk-mod)':'var(--risk-low)'}">${c1.hfvs.toFixed(3)}</div>
+          <span class="${riskBadge(c1.hfvs)}" style="margin-bottom:14px;display:inline-flex">${riskLabel(c1.hfvs)}</span>
+          <div style="margin-top:12px">
+          ${dims.map(d=>`
+            <div class="compare-dim-row">
+              <div class="compare-dim-label" style="color:${DC[d]}">${d.toUpperCase()}</div>
+              <div class="compare-dim-track"><div class="compare-dim-fill" style="width:${Math.round(c1[d]*100)}%;background:${DC[d]}"></div></div>
+              <div class="compare-dim-val ${c1[d]>c2[d]?'compare-loser':'compare-winner'}">${Math.round(c1[d]*100)}%</div>
+            </div>`).join('')}
+          </div>
+          <div style="margin-top:14px;font-size:11px;color:var(--text3)">Triple-exposed: <b style="color:var(--text)">${c1.triple.toFixed(2)}%</b></div>
+          <div style="font-size:11px;color:var(--text3)">Mortgage penetration: <b style="color:var(--text)">${c1.mortgage.toFixed(2)}%</b></div>
+        </div>
+        <div class="compare-col" style="border-left:1px solid var(--border);padding-left:16px">
+          <div class="compare-col-name">${c2.name}</div>
+          <div class="compare-col-score" style="color:${riskLevel(c2.hfvs)==='high'?'var(--risk-high)':riskLevel(c2.hfvs)==='mod'?'var(--risk-mod)':'var(--risk-low)'}">${c2.hfvs.toFixed(3)}</div>
+          <span class="${riskBadge(c2.hfvs)}" style="margin-bottom:14px;display:inline-flex">${riskLabel(c2.hfvs)}</span>
+          <div style="margin-top:12px">
+          ${dims.map(d=>`
+            <div class="compare-dim-row">
+              <div class="compare-dim-label" style="color:${DC[d]}">${d.toUpperCase()}</div>
+              <div class="compare-dim-track"><div class="compare-dim-fill" style="width:${Math.round(c2[d]*100)}%;background:${DC[d]}"></div></div>
+              <div class="compare-dim-val ${c2[d]>c1[d]?'compare-loser':'compare-winner'}">${Math.round(c2[d]*100)}%</div>
+            </div>`).join('')}
+          </div>
+          <div style="margin-top:14px;font-size:11px;color:var(--text3)">Triple-exposed: <b style="color:var(--text)">${c2.triple.toFixed(2)}%</b></div>
+          <div style="font-size:11px;color:var(--text3)">Mortgage penetration: <b style="color:var(--text)">${c2.mortgage.toFixed(2)}%</b></div>
+        </div>
+      </div>
+      <div style="padding:0 20px 20px">
+        <div class="insight ${Math.abs(c1.hfvs-c2.hfvs)>.04?'danger':'warn'}">
+          <div class="insight-label">AI Comparison Insight</div>
+          <div class="insight-text">
+            ${c1.name} (${c1.hfvs.toFixed(3)}) is ${c1.hfvs>c2.hfvs?'more':'less'} vulnerable than ${c2.name} (${c2.hfvs.toFixed(3)}) by ${Math.abs(c1.hfvs-c2.hfvs).toFixed(3)} HFVS points.
+            ${c1.name}'s worst dimension is ${DN_EN[worstDim(c1)]}; ${c2.name}'s worst is ${DN_EN[worstDim(c2)]}.
+            ${worstDim(c1)===worstDim(c2)?'Both counties share the same primary challenge and could benefit from coordinated regional interventions.':'The different worst dimensions suggest county-specific rather than regional intervention strategies.'}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>`;
+  document.getElementById('modal-container').innerHTML=modalHtml;
+}
+function closeModal(){ document.getElementById('modal-container').innerHTML=''; }
+
+/* ── EXPORT ─────────────────────────────────────────────────────── */
+function exportCountyText(name){
+  const c=COUNTIES.find(x=>x.name===name); if(!c) return;
+  const text=`HFVS Kenya — ${c.name} County Profile
+Generated: ${new Date().toLocaleDateString('en-KE')}
+Source: Kenya Housing Survey 2023/24, KNBS
+
+COMPOSITE HFVS: ${c.hfvs.toFixed(3)} (Rank ${c.rank}/47 | ${riskEn(c.hfvs)})
+Region: ${c.region}
+
+DIMENSION SCORES:
+  D1 Financial Stress:    ${Math.round(c.d1*100)}% (national avg: ${Math.round(NAT.d1*100)}%)
+  D2 Tenure Insecurity:   ${Math.round(c.d2*100)}% (national avg: ${Math.round(NAT.d2*100)}%)
+  D3 Physical Hazard:     ${Math.round(c.d3*100)}% (national avg: ${Math.round(NAT.d3*100)}%)
+  D4 Dwelling Quality:    ${Math.round(c.d4*100)}% (national avg: ${Math.round(NAT.d4*100)}%)
+  D5 Utility Deprivation: ${Math.round(c.d5*100)}% (national avg: ${Math.round(NAT.d5*100)}%)
+
+ADDITIONAL INDICATORS:
+  Triple-exposed households: ${c.triple.toFixed(2)}%
+  Mortgage penetration rate: ${c.mortgage.toFixed(2)}%
+  Worst dimension: ${DN_EN[worstDim(c)]}
+
+DATA SOURCE: Kenya National Bureau of Statistics (KNBS)
+Platform: HFVS Kenya · Strathmore University MSc Dissertation 2026`;
+  const blob=new Blob([text],{type:'text/plain'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=`HFVS_${name.replace(/\s/g,'_')}.txt`; a.click();
+  URL.revokeObjectURL(url);
+  toast(`📄 Profile exported for ${name}`);
+}
+
+function showExportModal(){
+  const csv='County,HFVS,Rank,Region,D1,D2,D3,D4,D5,Triple%,Mortgage%\n'+
+    COUNTIES.map(c=>`"${c.name}",${c.hfvs},${c.rank},"${c.region}",${c.d1},${c.d2},${c.d3},${c.d4},${c.d5},${c.triple},${c.mortgage}`).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='HFVS_Kenya_47_Counties.csv'; a.click();
+  URL.revokeObjectURL(url);
+  toast('📊 Full dataset exported as CSV');
+}
+
+function shareCounty(name){
+  const url=window.location.href+'#'+name.replace(/\s/g,'-');
+  if(navigator.clipboard) navigator.clipboard.writeText(url).then(()=>toast('🔗 Link copied!'));
+  else toast('🔗 Share: '+url);
+}
+
+/* ── FILTERS ────────────────────────────────────────────────────── */
+function filterCounties(){ searchVal=document.getElementById('countySearch').value; renderGrid(); }
+function setRiskFilter(f,btn){
+  riskFilter=f;
+  document.querySelectorAll('.filter-pills .pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid();
+}
+function setDimSort(d,btn){
+  dimSort=d;
+  document.querySelectorAll('.dpill').forEach(b=>b.className='dpill');
+  btn.className=`dpill active-${d}`;
+  renderGrid();
+}
+
+/* ── AI ─────────────────────────────────────────────────────────── */
+function buildSysPrompt(c){
+  const w=worstDim(c);
+  return `You are an expert housing policy advisor for Kenya, specialising in the Housing Financial Vulnerability Score (HFVS) from the Kenya Housing Survey 2023/24 (KNBS, n=21,347 households).
+
+COUNTY: ${c.name} County (Rank ${c.rank}/47, Region: ${c.region})
+HFVS: ${c.hfvs.toFixed(3)} | D1: ${Math.round(c.d1*100)}% | D2: ${Math.round(c.d2*100)}% | D3: ${Math.round(c.d3*100)}% | D4: ${Math.round(c.d4*100)}% | D5: ${Math.round(c.d5*100)}%
+National avgs — D1: 42% | D2: 37% | D3: 21% | D4: 52% | D5: 72%
+Worst dimension: ${DN_EN[w]} | Triple-exposed: ${c.triple.toFixed(2)}% | Mortgage penetration: ${c.mortgage.toFixed(2)}%
+
+NATIONAL: 96.8% no formal loan | 54.5% no land ownership | 96.6% solid-fuel cooking | 43.7% no grid electricity
+ML model: AUC=0.782, Brier=0.186 (below 0.22 actuarial threshold) | KMRC Spearman ρ=−0.294 (p=0.045)
+AHP: 12/15 most vulnerable counties have no active project | IRA: 7 counties generate all national property insurance
+
+Respond in plain, accessible language. If user writes Swahili, respond in Swahili. Keep responses practical (under 250 words) and tie recommendations to the specific dimension scores above.`;
+}
+
+async function callClaude(system,messages){
+  const r=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system,messages})
+  });
+  const d=await r.json();
+  return d.content?.map(i=>i.text||'').filter(Boolean).join('\n').trim()||'No response.';
+}
+
+async function aiQuick(name,prompt){
+  const key=name.replace(/\s/g,'_');
+  const inp=document.getElementById('ai-inp-'+key);
+  if(inp) inp.value=prompt;
+  await aiSend(name);
+}
+
+async function aiSend(name){
+  const key=name.replace(/\s/g,'_');
+  const inp=document.getElementById('ai-inp-'+key);
+  const btn=document.querySelector(`#ai-${key} .ai-send`);
+  const msgs=document.getElementById('ai-msgs-'+key);
+  const quick=document.getElementById('ai-quick-'+key);
+  if(!inp||!msgs) return;
+  const txt=inp.value.trim(); if(!txt) return;
+  if(quick) quick.style.display='none';
+  inp.value=''; if(btn) btn.disabled=true;
+
+  msgs.innerHTML+=`<div class="ai-msg user">${escHtml(txt)}</div>`;
+  const think=document.createElement('div');
+  think.className='ai-msg thinking';
+  think.innerHTML='<span class="en">Thinking…</span><span class="sw">Inafikiri…</span>';
+  msgs.appendChild(think); msgs.scrollTop=msgs.scrollHeight;
+
+  if(!aiHistory[key]) aiHistory[key]=[];
+  aiHistory[key].push({role:'user',content:txt});
+  const c=COUNTIES.find(x=>x.name===name);
+
+  try{
+    const reply=await callClaude(buildSysPrompt(c),aiHistory[key]);
+    aiHistory[key].push({role:'assistant',content:reply});
+    think.remove();
+    const el=document.createElement('div'); el.className='ai-msg assistant'; el.textContent=reply;
+    msgs.appendChild(el);
+  }catch(e){
+    think.remove();
+    const el=document.createElement('div'); el.className='ai-msg thinking'; el.textContent='Error: '+e.message;
+    msgs.appendChild(el);
+  }
+  msgs.scrollTop=msgs.scrollHeight;
+  if(btn) btn.disabled=false;
+}
+
+/* ── STAKEHOLDERS ───────────────────────────────────────────────── */
+const STAKEHOLDERS=[
+  {emoji:'🏛️',role:'Regulator',nameEn:'Insurance Regulatory Authority (IRA)',nameSw:'Mamlaka ya Udhibiti wa Bima (IRA)',number:'0.186',numEn:'HFVS Brier Score (below 0.22 actuarial threshold)',numSw:'Alama ya Brier ya HFVS',descEn:'Only 7 counties generate 100% of national property insurance premium — 40 counties contribute zero. The HFVS Brier score of 0.186 enables county-differentiated premium loading without further transformation.',descSw:'Kaunti 7 tu zinazalisha asilimia 100 ya malipo ya bima ya mali ya taifa. Alama ya Brier ya 0.186 inasaidia kubuni malipo tofauti kwa kaunti.',promptEn:'How should the Insurance Regulatory Authority Kenya use the HFVS Brier score of 0.186 to design county-differentiated property insurance premiums for vulnerable households?',promptSw:'Mamlaka ya Udhibiti wa Bima inapaswa kutumiaje alama ya HFVS Brier ya 0.186 kubuni malipo tofauti ya bima ya mali kwa kaunti?',color:'var(--d5)'},
+  {emoji:'🏠',role:'Housing Ministry',nameEn:'Affordable Housing Programme (AHP)',nameSw:'Programu ya Makazi ya Bei Nafuu (AHP)',number:'12/15',numEn:'Most vulnerable counties with no active AHP project',numSw:'Kaunti zenye udhaifu zaidi hazina mradi wa AHP',descEn:'AHP-active counties (n=15) have a mean HFVS of 0.347 vs 0.359 for non-AHP counties — statistically indistinguishable (Mann-Whitney p=0.367). The HFVS county ranking provides the missing evidence layer for programme expansion.',descSw:'Kaunti za AHP zina wastani wa HFVS wa 0.347 dhidi ya 0.359 kwa kaunti zisizo na AHP. Orodha ya HFVS inatoa data ya uteuzi wa tovuti inayokosekana.',promptEn:'Which 10 counties should the Kenya Affordable Housing Programme prioritise for its next sites based on the HFVS data, and what interventions match each county\'s worst dimension?',promptSw:'Ni kaunti zipi 10 ambazo AHP inapaswa kutanguliza kwa maeneo yake ya ijayo kulingana na data ya HFVS?',color:'var(--d1)'},
+  {emoji:'💰',role:'Mortgage Finance',nameEn:'Kenya Mortgage Refinance Company (KMRC)',nameSw:'Kampuni ya Ufadhili wa Mikopo (KMRC)',number:'ρ=−0.294',numEn:'Spearman correlation HFVS vs mortgage penetration (p=0.045)',numSw:'Uhusiano wa Spearman kati ya HFVS na mikopo',descEn:'97.4% of households have neither formal mortgage nor informal loan access. The most vulnerable counties are the least financed. Five counties — Busia, Vihiga, Garissa, Mandera, Marsabit — record near-zero mortgage penetration.',descSw:'Asilimia 97.4 ya kaya hazina mikopo ya nyumba rasmi. Kaunti tano — Busia, Vihiga, Garissa, Mandera, Marsabit — zinaonyesha ufikiaji wa karibu sifuri wa mikopo.',promptEn:'How should KMRC use the HFVS finance-exclusion quadrant (high vulnerability + near-zero mortgage penetration) to direct concessional lending in Kenya?',promptSw:'KMRC inapaswa kutumiaje kipande cha kutengwa kwa fedha cha HFVS kuelekeza mikopo ya ruzuku Kenya?',color:'var(--d4)'},
+  {emoji:'🏛️',role:'County Government',nameEn:'County Governments & MCAs',nameSw:'Serikali za Kaunti na MCAs',number:'D1–D5',numEn:'Each dimension maps to a specific budget line',numSw:'Kila kipimo kinamaanisha mstari maalum wa bajeti',descEn:'D5→electrification and clean cookstoves. D2→land registration and legal aid. D3→drainage and flood mapping. D4→building upgrade subsidies. D1→microfinance and rent subsidy schemes.',descSw:'D5→umeme na jiko safi. D2→usajili wa ardhi na msaada wa kisheria. D3→mifereji ya maji. D4→ruzuku za ujenzi. D1→fedha ndogo ndogo.',promptEn:'A county official wants to present the HFVS dimension breakdown to their county assembly. What should they say, and which specific development fund allocations should they propose?',promptSw:'Afisa wa kaunti anataka kuwasilisha mgawanyiko wa HFVS kwa bunge la kaunti. Anapaswa kusema nini?',color:'var(--d2)'},
+  {emoji:'🤝',role:'Development Partners',nameEn:'NGOs, UN-Habitat & Development Partners',nameSw:'Mashirika ya Kiserikali na UN-Habitat',number:'96.6%',numEn:'Of households cooking with solid fuel — primary D5 driver',numSw:'Ya kaya zinazopika kwa kuni/mkaa',descEn:'D5 sub-scores identify households with high utility deprivation even when their composite HFVS is moderate. Rural electrification, clean cooking, and WASH investment should target D5 specifically — not the composite.',descSw:'Alama ndogo za D5 zinatambua kaya zenye ukosefu mkubwa wa huduma hata wakati alama yao ya jumla ni ya wastani.',promptEn:'Which 10 counties should NGOs and UN-Habitat target for clean cooking and WASH interventions based on D5 utility deprivation scores?',promptSw:'Ni kaunti zipi 10 ambazo mashirika yapaswa kulenga kwa hatua za upikaji safi na WASH kulingana na alama ya D5?',color:'var(--d3)'},
+  {emoji:'🏡',role:'For Everyone',nameEn:'Mwananchi — Every Kenyan',nameSw:'Mwananchi — Kila Mkenya',number:'47',numEn:'Counties you can look up right now',numSw:'Kaunti unazoweza kutafuta sasa hivi',descEn:'Go to "Explore Counties" and type your county name. See your score across five dimensions. The "Worst" badge shows your biggest housing problem. Use this data when talking to your MCA, MP, or county official.',descSw:'Nenda kwenye "Tafuta Kaunti" na uandike jina la kaunti yako. Beji ya "Mbaya Zaidi" inaonyesha tatizo lako kubwa zaidi la makazi.',promptEn:'Explain in plain language what a Kenyan mwananchi can do with the HFVS data for their county — when talking to their local representative, applying for housing assistance, or advocating for services.',promptSw:'Eleza kwa lugha ya kawaida mwananchi wa Kenya anachoweza kufanya na data ya HFVS ya kaunti yake.',color:'var(--accent)'},
+];
+
+function renderStakeholders(){
+  document.getElementById('stakeholderGrid').innerHTML=STAKEHOLDERS.map(s=>`
+<div class="stk-card">
+  <div class="stk-icon-row">
+    <span class="stk-emoji">${s.emoji}</span>
+    <div>
+      <div class="stk-role" style="color:${s.color}">${s.role}</div>
+      <div class="stk-name en">${s.nameEn}</div>
+      <div class="stk-name sw">${s.nameSw}</div>
+    </div>
+  </div>
+  <div class="stk-number" style="color:${s.color}">${s.number}</div>
+  <div class="stk-num-lbl en">${s.numEn}</div>
+  <div class="stk-num-lbl sw">${s.numSw}</div>
+  <div class="stk-desc en">${s.descEn}</div>
+  <div class="stk-desc sw">${s.descSw}</div>
+  <button class="stk-btn" onclick="stkAsk('${esc(s.nameEn)}','${esc(s.promptEn)}','${esc(s.promptSw)}')" style="border-color:${s.color};color:${s.color}">
+    <span class="en">Ask AI Advisor ↗</span><span class="sw">Uliza Mshauri wa AI ↗</span>
+  </button>
+</div>`).join('');
+}
+
+function stkAsk(stkName,pEn,pSw){
+  const prompt=lang==='sw'?pSw:pEn;
+  const key=stkName.replace(/\W/g,'_');
+  const modalHtml=`
+<div class="modal-overlay" onclick="if(event.target.classList.contains('modal-overlay'))closeModal()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">AI Policy Advisor — ${stkName.split('(')[0].trim()}</div>
+        <div style="font-size:11px;color:var(--text3)">Kenya Housing Financial Vulnerability Platform</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="stk-msgs-${key}" style="padding:14px;display:flex;flex-direction:column;gap:10px;max-height:50vh;overflow-y:auto">
+        <div class="ai-msg user">${escHtml(prompt.substring(0,120))}…</div>
+        <div class="ai-msg thinking" id="stk-think-${key}">Thinking…</div>
+      </div>
+      <div style="display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--border);background:var(--surface2)">
+        <textarea id="stk-inp-${key}" rows="1" style="flex:1;padding:8px;font-size:12px;font-family:var(--ff-body);border:1px solid var(--border);border-radius:var(--r-md);resize:none;background:var(--surface);color:var(--text)" placeholder="Ask a follow-up…"></textarea>
+        <button onclick="stkFollowup('${esc(stkName)}','${key}')" style="padding:8px 14px;background:var(--accent);color:#000;border:none;border-radius:var(--r-md);cursor:pointer;font-size:12px;font-weight:700;align-self:flex-end">Ask</button>
+      </div>
+    </div>
+  </div>
+</div>`;
+  document.getElementById('modal-container').innerHTML=modalHtml;
+
+  const sys=`You are a Kenya housing policy expert with deep knowledge of HFVS, IRA insurance regulation, KMRC mortgage finance, AHP, county budgets, NGO/UN-Habitat interventions. Be practical, specific, under 300 words. Respond in Swahili if asked in Swahili.`;
+  if(!stkHistory[key]) stkHistory[key]=[];
+  stkHistory[key]=[{role:'user',content:prompt}];
+  callClaude(sys,stkHistory[key]).then(reply=>{
+    stkHistory[key].push({role:'assistant',content:reply});
+    const t=document.getElementById(`stk-think-${key}`); if(t) t.remove();
+    const msgs=document.getElementById(`stk-msgs-${key}`);
+    if(msgs){ const el=document.createElement('div'); el.className='ai-msg assistant'; el.textContent=reply; msgs.appendChild(el); msgs.scrollTop=msgs.scrollHeight; }
+  }).catch(e=>{ const t=document.getElementById(`stk-think-${key}`); if(t) t.textContent='Error: '+e.message; });
+}
+
+async function stkFollowup(stkName,key){
+  const inp=document.getElementById(`stk-inp-${key}`);
+  const msgs=document.getElementById(`stk-msgs-${key}`);
+  if(!inp||!msgs) return;
+  const txt=inp.value.trim(); if(!txt) return;
+  inp.value='';
+  if(!stkHistory[key]) stkHistory[key]=[];
+  stkHistory[key].push({role:'user',content:txt});
+  msgs.innerHTML+=`<div class="ai-msg user">${escHtml(txt)}</div>`;
+  const think=document.createElement('div'); think.className='ai-msg thinking'; think.textContent='Thinking…';
+  msgs.appendChild(think); msgs.scrollTop=msgs.scrollHeight;
+  try{
+    const reply=await callClaude(`You are a Kenya housing policy expert. ${stkName} context. Practical, under 300 words. Swahili if asked.`,stkHistory[key]);
+    stkHistory[key].push({role:'assistant',content:reply});
+    think.remove();
+    const el=document.createElement('div'); el.className='ai-msg assistant'; el.textContent=reply;
+    msgs.appendChild(el); msgs.scrollTop=msgs.scrollHeight;
+  }catch(e){ think.textContent='Error: '+e.message; }
+}
+
+/* ── NATIONAL ───────────────────────────────────────────────────── */
+function renderWeightBars(){
+  const ws=[
+    {k:'D5',label:'Utility Deprivation',w:.343,color:'var(--d5)'},
+    {k:'D1',label:'Financial Stress',   w:.237,color:'var(--d1)'},
+    {k:'D4',label:'Dwelling Quality',   w:.220,color:'var(--d4)'},
+    {k:'D2',label:'Tenure Insecurity',  w:.138,color:'var(--d2)'},
+    {k:'D3',label:'Physical Hazard',    w:.062,color:'var(--d3)'},
+  ];
+  document.getElementById('weightBars').innerHTML=ws.map(w=>`
+<div class="dim-row">
+  <div class="dim-label" style="color:${w.color}">${w.k}: ${w.label}</div>
+  <div class="dim-bar-track">
+    <div class="dim-bar-fill" style="width:${Math.round(w.w/.343*100)}%;background:${w.color}"></div>
+  </div>
+  <div class="dim-val" style="color:${w.color}">${(w.w*100).toFixed(1)}%</div>
+  ${w.k==='D5'?'<span class="tag tag-red">Dominant</span>':''}
+  ${w.k==='D3'?'<span class="tag tag-amber">Suppressed</span>':''}
+</div>`).join('');
+}
+
+function renderLeaderboard(el,sorted,N){
+  el.innerHTML=sorted.slice(0,N).map((c,i)=>`
+<div class="lb-row" onclick="switchTab('explore');setTimeout(()=>selectCounty('${esc(c.name)}'),50)">
+  <div class="lb-pos" style="color:${i<3?'var(--amber)':'var(--text3)'}">${i+1}</div>
+  <div style="flex:1">
+    <div class="lb-name">${c.name}</div>
+    <div class="lb-region">${c.region}</div>
+  </div>
+  <div class="lb-mini-bars">${['d1','d2','d3','d4','d5'].map((d,di)=>`<div style="flex:1;height:${Math.round(c[d]*18)+2}px;background:${DC[d]};border-radius:2px;align-self:flex-end"></div>`).join('')}</div>
+  <span class="${riskBadge(c.hfvs)}" style="font-size:9px;padding:2px 7px;margin:0 6px">${riskLabel(c.hfvs)}</span>
+  <div class="lb-score" style="color:${riskLevel(c.hfvs)==='high'?'var(--risk-high)':riskLevel(c.hfvs)==='mod'?'var(--risk-mod)':'var(--risk-low)'}">${c.hfvs.toFixed(3)}</div>
+</div>`).join('');
+}
+
+/* ── TOAST ──────────────────────────────────────────────────────── */
+function toast(msg,duration=3000){
+  const t=document.createElement('div');
+  t.className='toast'; t.innerHTML=msg;
+  document.getElementById('toast-container').appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateX(20px)'; t.style.transition='all .3s'; setTimeout(()=>t.remove(),300); },duration);
+}
+
+/* ── SCROLL TOP ─────────────────────────────────────────────────── */
+window.addEventListener('scroll',()=>{
+  const btn=document.getElementById('scroll-top');
+  btn.classList.toggle('visible',window.scrollY>300);
+});
+
+/* ── KEYBOARD SHORTCUT ──────────────────────────────────────────── */
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='k'){
+    e.preventDefault();
+    switchTab('explore');
+    document.getElementById('countySearch')?.focus();
+  }
+});
+
+/* ── UTILS ──────────────────────────────────────────────────────── */
+function esc(s){return (s+'').replace(/'/g,"\\'");}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* ── ANIMATED COUNTERS ──────────────────────────────────────────── */
+function animateCounter(el,target,decimals=0,duration=1500){
+  const start=Date.now();
+  const update=()=>{
+    const elapsed=Date.now()-start;
+    const progress=Math.min(elapsed/duration,1);
+    const ease=1-Math.pow(1-progress,3);
+    const current=target*ease;
+    el.textContent=decimals>0?current.toFixed(decimals):Math.round(current).toLocaleString();
+    if(progress<1) requestAnimationFrame(update);
+  };
+  update();
+}
+
+/* ── INIT ───────────────────────────────────────────────────────── */
+const sorted=[...COUNTIES].sort((a,b)=>b.hfvs-a.hfvs);
+const sortedAsc=[...COUNTIES].sort((a,b)=>a.hfvs-b.hfvs);
+
+window.addEventListener('load',()=>{
+  renderGrid();
+  renderWeightBars();
+  renderLeaderboard(document.getElementById('topLeaderboard'),sorted,10);
+  renderLeaderboard(document.getElementById('bottomLeaderboard'),sortedAsc,10);
+  renderStakeholders();
+  initCanvas('heroCanvas');
+  initCanvas('heroCanvas2');
+
+  // Animated counters
+  setTimeout(()=>{
+    animateCounter(document.getElementById('kpi-hh'),21347,0,1800);
+    animateCounter(document.getElementById('kpi-auc'),.989,3,1200);
+    animateCounter(document.getElementById('kpi-hfvs'),.324,3,1400);
+  },300);
+
+  // Keyboard hint
+  const isMac=navigator.platform.toUpperCase().includes('MAC');
+  const hint=document.getElementById('kbdHint');
+  if(hint){ hint.textContent=isMac?'⌘K':'Ctrl+K'; hint.style.display='block'; }
+
+  // Toast welcome
+  setTimeout(()=>toast('🇰🇪 Welcome to HFVS Kenya — click any county to explore'),800);
+});
+</script>
+</body>
+</html>
