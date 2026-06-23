@@ -1036,3 +1036,43 @@ Here is the master list of all key visualizations generated across your main pip
 * **Source:** `exploration.ipynb`
 * **Significance:** The methodological blueprint.
 * **What it tells the audience:** A beautiful, structured visual breaking down the 5 dimensions (Financial, Tenure, Hazard, Dwelling, Utility) that make up the composite score. It serves as the introductory schema for the entire dissertation.
+
+
+
+# IMAGES
+
+
+/content/drive/MyDrive/KHS_Dissertation/outputs# cd figures/
+/content/drive/MyDrive/KHS_Dissertation/outputs/figures# ls
+01_county_sample_distribution.png        dsa8301                                     enhancement_triple_exposure.png  phase2_null_audit.png                   phase8_actual_vs_proxy_scatter.png
+02_rent_burden_distribution.png          dsa8301_advanced                            eval01_pr_roc_final.png          phase4_affordability_gap.png            phase8_ahp_alignment.png
+03a_logistic_coef.png                    eda01_topology.png                          hfvs_overview.png                phase4_aspiration_scatter.png           phase8_choropleth_maps.png
+03b_tabnet_attention.png                 eda02_missingness.png                       ira_validation_scatter.png       phase4_county_hfvs_prmodel.png          phase8_county_hfvs_ranking.png
+03c_shap_summary.png                     eda03_target.png                            mutual_information_top20.png     phase4_dimension_correlation.png        phase8_economic_summary.png
+03d_model_comparison.png                 eda04_dimensions.png                        nonlinear01_comparison.png       phase4_hfvs_distribution.png            phase8_finance_exclusion_scatter.png
+03e_county_residuals.png                 eda05_urban_rural.png                       null_audit_top30.png             phase4_mutual_information.png           phase8_gini_vs_mean_hfvs.png
+03f_dimension_alignment.png              eda06_counties.png                          p1_hfvs_framework.png            phase4_proxy_mutual_information.png     phase8_ira_validation.png
+03_hazard_prevalence.png                 eda07_numerics.png                          p2_null_audit.png                phase4_triple_exposure_counties.png     phase8_lorenz_curves_county_inequality.png
+04_utility_deprivation.png               eda08_categoricals.png                      p5_county_ranking.png            phase4_upset_compound_exposure.png      phase8_lorenz_gini.png
+05_housing_barriers.png                  eda09_correlations.png                      p5_dimensions.png                phase4_urban_rural_exposure.png         phase8_market_creation.png
+06_household_size.png                    eda10_mutual_info.png                       p5_mutual_info.png               phase6_county_tier_distribution.png     phase8_premium_concentration.png
+07_financial_correlation.png             eda11a_correlation_matrix.png               p5_target.png                    phase6_dimension_alignment.png          phase8_premium_differentiation.png
+08_county_risk_heatmap.png               eda11b_scatter_matrix.png                   p5_urban_rural.png               phase6_model_comparison.png             phase8_premodel_vs_postmodel_county_hfvs.png
+09_hfvs_component_distributions.png      eda12_skewness.png                          p7_baseline_eval.png             phase6_multiclass_confusion_matrix.png  phase8_urban_rural_hfvs.png
+09_hfvs_distributions_v2.png             eda14_summary_dashboard.png                 p7_county_validation.png         phase6_proxy_domain_alignment.png       prep01_baselines.png
+10_county_hfvs_v2.png                    enhancement_affordability_gap.png           p7_shap.png                      phase6_shap_analysis.png                roc_pr_curves.png
+10_dimension_correlation.png             enhancement_county_choropleths.png          p8_3class_confusion.png          phase7_calibration_curves.png           sample_overview.png
+11_hfvs_by_geography.png                 enhancement_county_hfvs_ranking.png         p8_county_ranking_bar.png        phase7_calibration_curves_v4.png        shap01_beeswarm.png
+correlation_heatmap.png                  enhancement_finance_exclusion_quadrant.png  p8_regression.png                phase7_choropleth.png                   shap02_bar_by_category.png
+county_choropleth.png                    enhancement_gini_scatter.png                phase1_crisp_dm.png              phase7_county_hfvs_ranking.png          shap03_dependence_top4.png
+county_dimension_heatmap.png             enhancement_ira_validation_scatter.png      phase1_hfvs_framework.png        phase7_ira_validation.png               shap_dependence_top2.png
+county_vulnerability_ranking.png         enhancement_lorenz_gini.png                 phase2_demographics.png          phase7_roc_pr_curves.png                shap_global_importance.png
+dimension_distributions_urban_rural.png  enhancement_premium_concentration.png       phase2_mortgage_penetration.png  phase7_shap_analysis.png                v2
+/content/drive/MyDrive/KHS_Dissertation/outputs/figures# cd V2
+-bash: cd: V2: No such file or directory
+/content/drive/MyDrive/KHS_Dissertation/outputs/figures# cd v2
+/content/drive/MyDrive/KHS_Dissertation/outputs/figures/v2# ls
+04a_feature_mi.png        04d_shap_xgb.png           04g_county_residuals_named.png  05b_dimension_maps.png     05e_ira_validation.png         05h_urban_rural_hfvs.png
+04b_logistic_coef.png     04e_model_comparison.png   04h_dimension_alignment.png     05c_county_ranking.png     05f_spatial_residuals_map.png
+04c_tabnet_attention.png  04f_county_hfvs_named.png  05a_county_hfvs_choropleth.png  05d_dimension_heatmap.png  05g_weighting_robustness.png
+/content/drive/MyDrive/KHS_Dissertation/outputs/figures/v2# cd ..
